@@ -6,9 +6,9 @@ authors = ["emperorsixpacks <andrewdvd10@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pytest-playwright = "^0.5.2"
 edgedb = "^2.0.1"
 htmx = "^0.0.0"
+bs4 = "^0.0.2"
 
 [tool.poetry.dev-dependencies]
 

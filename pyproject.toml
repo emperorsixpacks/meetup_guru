@@ -12,6 +12,7 @@ fastapi = "^0.114.2"
 edgedb = "^2.0.1"
 pydantic-core = "^2.23.3"
 httpx = {extras = ["cli"], version = "^0.27.2"}
+black = "^24.8.0"
 
 [tool.poetry.dev-dependencies]
 

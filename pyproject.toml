@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "meetup_guru"
+version = "0.1.0"
+description = "A platform to match users to events happening in there area"
+authors = ["emperorsixpacks <andrewdvd10@gmail.com>"]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+redis = "fastapi"
+fastapi = "^0.114.2"
+edgedb = "^2.0.1"
+pydantic-core = "^2.23.3"
+httpx = {extras = ["cli"], version = "^0.27.2"}
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.extras]
+runtime = ["ruamel.ordereddict"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

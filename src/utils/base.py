@@ -1,4 +1,5 @@
 import os
 
-def return_app_dir():
-    return os.path.dirname(os.path.abspath(__file__))
+def return_app_dir(current_location):
+    return os.path.dirname(os.path.dirname(os.path.dirname(current_location)))
+

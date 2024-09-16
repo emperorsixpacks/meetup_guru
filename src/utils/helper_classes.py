@@ -27,7 +27,7 @@ class EventBriteEvent(Event):
     # tags: List[str]
 
 
-class Pagination(BaseModel):
-    page: int
-    total_pages: int
-    events: List[EventBriteEvent]
+# class Pagination(BaseModel):
+#     page: int
+#     total_pages: int
+#     # events: List[EventBriteEvent]

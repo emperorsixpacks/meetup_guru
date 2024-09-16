@@ -46,3 +46,7 @@ class BaseEventScrapper(ABC):
     @abstractmethod
     def scrape(self, path: str = None, qparams: Dict[str, str] = None):
         pass
+
+    @abstractmethod
+    def __build_search_url(self):
+        pass

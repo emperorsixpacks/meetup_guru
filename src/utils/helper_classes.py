@@ -31,3 +31,15 @@ class EventBriteEvent(Event):
 #     page: int
 #     total_pages: int
 #     # events: List[EventBriteEvent]
+
+
+class EventBriteCategory(BaseModel):
+    name: str
+    id:int
+    name_localized:str
+    short_name:str
+    short_name_localized:str
+
+class EventBriteSubCategory(BaseModel):
+    id:str
+    name: str

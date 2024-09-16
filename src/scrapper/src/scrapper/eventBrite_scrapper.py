@@ -10,6 +10,7 @@ SERVER_DATA_REGEX = re.compile(r"__SERVER_DATA__\s*=\s*({.*?});", re.DOTALL)
 
 
 class EventBiteScrapper(BaseEventScrapper):
+    has_authentication = True
     base_url = "https://www.eventbrite.com"
 
     def __init__(self, country, city) -> None:
@@ -40,6 +41,9 @@ class EventBiteScrapper(BaseEventScrapper):
     def build_search_url(self, country, city):
 
         return self.build_url(f"d/{country.lower()}--{city.lower()}/all-events/")
+    
+    def return_sub_categories(self):
+        pass
     
     def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if page_number > self.total_pages or page_number < 1:

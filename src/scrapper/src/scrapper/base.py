@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from bs4 import BeautifulSoup
+
 
 class BaseEventScrapper(ABC):
     authenticate_url: str = None
@@ -12,9 +14,12 @@ class BaseEventScrapper(ABC):
     def authenticate(self):
         pass
 
+    def parse_html(self, html_response, tag):
+        soup = BeautifulSoup(html_response, 'html.parser')
+        script_tags = soup.find_all('script')
+        pass
+
     @abstractmethod
     def scrape(self):
         pass
-    
-    
-    
+

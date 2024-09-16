@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from datetime import time, date
 from pydantic import BaseModel, HttpUrl
 
@@ -14,7 +14,7 @@ class Event(BaseModel):
     country: str
     summary: str
     # address: str
-    # image_url: HttpUrl
+    image_url: Optional[HttpUrl] = None
     is_online_event: bool
 
 

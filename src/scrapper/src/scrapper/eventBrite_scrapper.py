@@ -13,7 +13,7 @@ class EventBiteScrapper(BaseEventScrapper):
     base_url = "https://www.eventbrite.com"
 
     def __init__(self, country, city) -> None:
-        self.search_url = self.__build_search_url(country, city)
+        self.search_url = self.build_search_url(country, city)
         self.search_qpararms: Dict[str, str] = None
         self.total_pages = 0
         super().__init__()
@@ -28,16 +28,16 @@ class EventBiteScrapper(BaseEventScrapper):
 
         return json_data
 
-    def search(self, path: str = None, qparams: Dict[str, str] = None) -> Self:
+    def search(self, qparams: Dict[str, str] = None) -> Self:
 
-        json_data = self.__return_server_data(path, qparams)
-        self.total_pages = self.search()["search_data"]["events"]["pagination"][
+        json_data = self.__return_server_data(self.search_url, qparams)
+        self.total_pages = json_data["search_data"]["events"]["pagination"][
             "page_count"
         ]
         self.search_qpararms = qparams
-        return json_data
+        return self
 
-    def __build_search_url(self, country, city):
+    def build_search_url(self, country, city):
 
         return self.build_url(f"d/{country.lower()}--{city.lower()}/all-events/")
 
@@ -47,7 +47,9 @@ class EventBiteScrapper(BaseEventScrapper):
         path = self.search_url
         qparams = self.search_qpararms
         qparams["page"] = page_number
-        json_data = self.__return_server_data(path, qparams)
+        response = self.__return_server_data(path, qparams)
+        json_data = response["search_data"]["events"]["results"]
+    
         return (
             [
                 EventBriteEvent(
@@ -57,16 +59,23 @@ class EventBiteScrapper(BaseEventScrapper):
                     country=event["primary_venue"]["address"]["country"],
                     summary=event["summary"],
                     # address=event["address"],
-                    image_url=event.get("image")["url"],
+                    image_url=event.get("image")["url"] if event.get("image") else None,
                     is_online_event=event["is_online_event"],
                     start_time=formate_time(event["start_time"]),
                     start_date=format_date(event["start_date"]),
                     end_time=formate_time(event["end_time"]),
                     end_date=format_date(event["end_date"]),
                 )
-                for event in json_data["search_data"]["events"]["results"]
+                for event in json_data
             ],
         )
 
     def scrape(self, path: str = None, qparams: Dict[str, str] = None):
         pass
+
+
+print(
+    EventBiteScrapper(country="Nigeria", city="lagos")
+    .search(qparams={"page": "1"})
+    .return_page_data(7)
+)

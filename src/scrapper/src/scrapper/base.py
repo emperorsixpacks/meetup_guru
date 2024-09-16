@@ -48,5 +48,5 @@ class BaseEventScrapper(ABC):
         pass
 
     @abstractmethod
-    def __build_search_url(self):
+    def build_search_url(self):
         pass

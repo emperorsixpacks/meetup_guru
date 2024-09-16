@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime
+from datetime import time, date
 from pydantic import BaseModel, HttpUrl
 
 
@@ -13,16 +13,21 @@ class Event(BaseModel):
     city: str
     country: str
     summary: str
-    address: str
-    image_url: HttpUrl
+    # address: str
+    # image_url: HttpUrl
     is_online_event: bool
 
 
 class EventBriteEvent(Event):
-    start_date: datetime
-    end_date: datetime
-    start_time: datetime
-    end_time: datetime
-    location: Location
-    tags: List[str]
+    start_date: date
+    end_date: date
+    start_time: time
+    end_time: time
+    # location: Location
+    # tags: List[str]
 
+
+class Pagination(BaseModel):
+    page: int
+    total_pages: int
+    events: List[EventBriteEvent]

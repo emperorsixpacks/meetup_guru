@@ -19,10 +19,7 @@ class BaseEventScrapper(ABC):
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "__source_name__"):
             setattr(cls, "__source_name__", cls.__name__)
-        if (
-            cls.has_authentication
-            and getattr(cls, "authentication_url") is None
-        ):
+        if cls.has_authentication and cls.authentication_url is None:
             raise ValueError("Provide a valid authentication url for your source")
 
     def _create_session(self) -> Session:
@@ -33,11 +30,9 @@ class BaseEventScrapper(ABC):
     def authenticate(self):
         pass
 
-    def parse_html(self, html_response, tag, regex:str = None):
+    def parse_html(self, html_response, tag):
         soup = BeautifulSoup(html_response, "html.parser")
         soup_result = soup.find_all(tag)
-        if regex:
-            soup_result = re.search(regex, soup_result).group(1)
         return soup_result
 
     def build_url(self, path: str = "", qparams=None):

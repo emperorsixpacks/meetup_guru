@@ -44,9 +44,9 @@ class BaseEventScrapper(ABC):
         return url
 
     @abstractmethod
-    def scrape(self, path: str = None, qparams: Dict[str, str] = None):
+    def scrape(self):
         pass
 
     @abstractmethod
-    def build_search_url(self):
+    def build_search_url(self, country, city):
         pass

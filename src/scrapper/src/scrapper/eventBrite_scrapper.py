@@ -40,8 +40,8 @@ class EventBiteScrapper(BaseEventScrapper):
     def build_search_url(self, country, city):
 
         return self.build_url(f"d/{country.lower()}--{city.lower()}/all-events/")
-
-    def return_page_data(self, page_number: int = 1) -> list[EventBriteEvent]:
+    
+    def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if page_number > self.total_pages or page_number < 1:
             raise ValueError("Invalid page number")
         path = self.search_url
@@ -49,7 +49,7 @@ class EventBiteScrapper(BaseEventScrapper):
         qparams["page"] = page_number
         response = self.__return_server_data(path, qparams)
         json_data = response["search_data"]["events"]["results"]
-    
+
         return (
             [
                 EventBriteEvent(
@@ -69,13 +69,3 @@ class EventBiteScrapper(BaseEventScrapper):
                 for event in json_data
             ],
         )
-
-    def scrape(self, path: str = None, qparams: Dict[str, str] = None):
-        pass
-
-
-print(
-    EventBiteScrapper(country="Nigeria", city="lagos")
-    .search(qparams={"page": "1"})
-    .return_page_data(7)
-)

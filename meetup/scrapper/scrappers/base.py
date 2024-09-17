@@ -1,10 +1,9 @@
-import re
 from typing import Dict
 from urllib.parse import urljoin, urlencode
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 
-from src.utils.session_manager import Session
+from meetup.utils.session_manager import Session
 
 
 class BaseEventScrapper(ABC):

@@ -1,7 +1,7 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.utils.base import return_app_dir
+from meetup.utils.base import return_app_dir
 
 
 def return_env_file_dir():

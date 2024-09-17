@@ -7,9 +7,10 @@ class Location(BaseModel):
     logitude: float
     latitude: float
 
+
 class Event(BaseModel):
     name: str
-    url:  HttpUrl
+    url: HttpUrl
     city: str
     country: str
     summary: str
@@ -35,11 +36,12 @@ class EventBriteEvent(Event):
 
 class EventBriteCategory(BaseModel):
     name: str
-    id:int
-    name_localized:str
-    short_name:str
-    short_name_localized:str
+    id: int
+    name_localized: str
+    short_name: str
+    short_name_localized: str
+
 
 class EventBriteSubCategory(BaseModel):
-    id:str
+    id: str
     name: str

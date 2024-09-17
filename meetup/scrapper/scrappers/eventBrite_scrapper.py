@@ -1,20 +1,20 @@
 import re
 import json
-from typing import Dict, Self
+from typing import Dict, Self, Optional
 
-from scrapper.base import BaseEventScrapper
-from src.utils.helper_classes import EventBriteEvent
-from src.utils.helper_functions import formate_time, format_date
+from meetup.scrapper.scrappers.base import BaseEventScrapper
+from meetup.utils.helper_classes import EventBriteEvent
+from meetup.utils.helper_functions import formate_time, format_date, get_category_by_id
 
 SERVER_DATA_REGEX = re.compile(r"__SERVER_DATA__\s*=\s*({.*?});", re.DOTALL)
 
 
 class EventBiteScrapper(BaseEventScrapper):
-    has_authentication = True
+    # has_authentication = True
     base_url = "https://www.eventbrite.com"
 
-    def __init__(self, country, city) -> None:
-        self.search_url = self.build_search_url(country, city)
+    def __init__(self, country, city, category: Optional[str] = None) -> None:
+        self.search_url = self.build_search_url(country, city, category)
         self.search_qpararms: Dict[str, str] = None
         self.total_pages = 0
         super().__init__()
@@ -22,7 +22,6 @@ class EventBiteScrapper(BaseEventScrapper):
     def __return_server_data(self, path: str = None, qparams: Dict[str, str] = None):
         new_url = self.build_url(path, qparams)
         response = self.session.get(new_url).text
-
         parsed_html = self.parse_html(response, "script")[11].string
         soup_result = re.search(SERVER_DATA_REGEX, parsed_html).group(1)
         json_data = json.loads(soup_result)
@@ -38,13 +37,19 @@ class EventBiteScrapper(BaseEventScrapper):
         self.search_qpararms = qparams
         return self
 
-    def build_search_url(self, country, city):
+    def build_search_url(self, country, city, category_id: Optional[str] = None) -> str:
 
-        return self.build_url(f"d/{country.lower()}--{city.lower()}/all-events/")
-    
+        return (
+            self.build_url(f"d/{country.lower()}--{city.lower()}/all-events/")
+            if category_id is None
+            else self.build_url(
+                f"d/{country.lower()}--{city.lower()}/{get_category_by_id(category_id=category_id)}--events/"
+            )
+        )
+
     def return_sub_categories(self):
         pass
-    
+
     def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if page_number > self.total_pages or page_number < 1:
             raise ValueError("Invalid page number")
@@ -73,3 +78,7 @@ class EventBiteScrapper(BaseEventScrapper):
                 for event in json_data
             ],
         )
+
+
+
+print(EventBiteScrapper("NIgeria", "Lagos").search().scrape())

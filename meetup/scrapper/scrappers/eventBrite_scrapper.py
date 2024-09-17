@@ -15,7 +15,7 @@ class EventBiteScrapper(BaseEventScrapper):
 
     def __init__(self, country, city, category: Optional[str] = None) -> None:
         self.search_url = self.build_search_url(country, city, category)
-        self.search_qpararms: Dict[str, str] = None
+        self.search_qpararms: Dict[str, str] = {}
         self.total_pages = 0
         super().__init__()
 
@@ -28,7 +28,7 @@ class EventBiteScrapper(BaseEventScrapper):
 
         return json_data
 
-    def search(self, qparams: Dict[str, str] = None) -> Self:
+    def search(self, qparams: Dict[str, str] = {}) -> Self:
 
         json_data = self.__return_server_data(self.search_url, qparams)
         self.total_pages = json_data["search_data"]["events"]["pagination"][
@@ -54,9 +54,8 @@ class EventBiteScrapper(BaseEventScrapper):
         if page_number > self.total_pages or page_number < 1:
             raise ValueError("Invalid page number")
         path = self.search_url
-        qparams = self.search_qpararms
-        qparams["page"] = page_number
-        response = self.__return_server_data(path, qparams)
+        self.search_qpararms["page"] = page_number
+        response = self.__return_server_data(path, self.search_qpararms)
         json_data = response["search_data"]["events"]["results"]
 
         return (

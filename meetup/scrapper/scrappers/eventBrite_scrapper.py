@@ -78,6 +78,3 @@ class EventBiteScrapper(BaseEventScrapper):
             ],
         )
 
-
-
-print(EventBiteScrapper("NIgeria", "Lagos").search().scrape())

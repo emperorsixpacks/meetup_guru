@@ -1,6 +1,7 @@
+from uuid import UUID, uuid4
 from typing import List, Optional
-from datetime import time, date
-from pydantic import BaseModel, HttpUrl
+from datetime import time, date, datetime
+from pydantic import BaseModel, HttpUrl, Field, field_serializer
 
 
 class Location(BaseModel):
@@ -45,3 +46,16 @@ class EventBriteCategory(BaseModel):
 class EventBriteSubCategory(BaseModel):
     id: str
     name: str
+
+
+class RedisJob(BaseModel):
+    job_id: UUID = Field(default_factory=uuid4)
+    name: str
+    # is_complete: bool = Field(default=False)
+    date_published: datetime = Field(default_factory=datetime.now)
+
+    # TODO: Add metadata field
+
+    @field_serializer("date_published", when_used="json")
+    def serialize_date_published(self, value: datetime) -> str:
+        return value.strftime("%Y-%m-%d %H:%M:%S")

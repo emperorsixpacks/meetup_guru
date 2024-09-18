@@ -28,3 +28,10 @@ class RedisSettings(BaseAppSettings):
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
     redis_password: Optional[str] = None
+
+class RabbitMQSettings(BaseAppSettings):
+    rabbitmq_host: str = Field(default="localhost")
+    rabbitmq_port: int = Field(default=5672)
+    rabbitmq_user: str = Field(default="guest")
+    rabbitmq_password: str = Field(default="guest")
+    rabbitmq_exchange: str = Field(default="meetup")

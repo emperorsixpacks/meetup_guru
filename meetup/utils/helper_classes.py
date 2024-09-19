@@ -52,10 +52,11 @@ class EventBriteSubCategory(BaseModel):
     id: str
     name: str
 
+
 class ScrapperMetadata(BaseModel):
     name: str
     category: EventBriteCategory
-    
+
 
 class RedisJob(BaseModel):
     job_id: UUID = Field(default_factory=uuid4)
@@ -63,10 +64,19 @@ class RedisJob(BaseModel):
     scrapper_meta_data: ScrapperMetadata
     is_complete: bool = Field(default=False)
     date_published: datetime = Field(default_factory=datetime.now)
-    
 
     @field_serializer("date_published", when_used="json")
     def serialize_date_published(self, value: datetime) -> str:
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
+class Message(BaseModel):
+    text: str
+    date_published: datetime = Field(default_factory=datetime.now)
+
+    @field_serializer("date_published", when_used="json")
+    def serialize_date_published(self, value: datetime) -> str:
+
         return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
@@ -102,7 +112,7 @@ class BaseRabbitMQConsumer(ABC):
             self.channel.queue_declare(queue=queue, durable=True)
 
         return None
-    
+
     @abstractmethod
     def callback(self, ch, method, properties, body):
         pass
@@ -117,7 +127,18 @@ class BaseRabbitMQConsumer(ABC):
         except KeyboardInterrupt:
             self.channel.stop_consuming()
 
-    # def publish(self, message):
+    def publish(self,queue:str, message:Message):
+        if queue not in self.queues:
+            raise ValueError("Queue not found")
+        self.channel.basic_publish(
+            exchange="",
+            routing_key=queue,
+            body=message.model_dump_json(),
+            properties = pika.BasicProperties(
+                delivery_mode=2
+            )
+        )
+        return None
 
 
     def __enter__(self):

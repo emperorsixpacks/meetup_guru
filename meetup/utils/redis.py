@@ -16,13 +16,17 @@ class RedisClient:
         return new_job
 
     def get_job(self, job_id: UUID) -> RedisJob:
-        pass
+        job = self._client.get(str(job_id))
+        if job is None:
+            return None
+            # raise ValueError(f"Job with id {job_id} not found")  # TODO: use a logger here
+        return RedisJob.from_json(job)
 
     def delete_job(self, job_id: UUID) -> bool:
         pass    
 
     def get_job_status(self, job_id: UUID) -> bool:
-        pass
+        return bool(self.get_job(job_id)["status"])
 
     def update_job_status(self, job_id: UUID, status: bool) -> bool:
         pass

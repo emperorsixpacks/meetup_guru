@@ -20,7 +20,7 @@ class Scrapper(BaseRabbitMQConsumer):
     async def process_with_event_brite_scrapper(self):
         async with Session() as session:
             event_brite_scrapper =  EventBiteScrapper(
-                session=session,  city="lagos", country="nigeria"
+                session=session, category=199, city="lagos", country="nigeria"
             ).search()
             return await self.process(event_brite_scrapper)
         

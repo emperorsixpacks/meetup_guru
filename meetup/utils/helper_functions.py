@@ -49,3 +49,26 @@ def extract_url_parts(url: str) -> URL:
     query_params = parse_qs(parsed_url.query)
 
     return URL(scheme=scheme, path=path, qparams=query_params)
+
+
+def flatten_events(nested_list):
+    flat_list = []
+
+    if not isinstance(nested_list, (list, tuple)):
+        return None
+
+    for item in nested_list:
+        if item is None:
+            continue
+        if isinstance(item, (list, tuple)):
+            flat_list.extend(item)
+            continue
+        flat_list.append(item)
+
+    try:
+        if not isinstance(flat_list[1], list):
+            return flat_list
+    except IndexError:
+        pass
+
+    return flatten_events(nested_list=flat_list)

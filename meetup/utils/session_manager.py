@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Dict, Optional, Self
+from typing import Dict, Optional, Self, Union
 import httpx
 
 from .global_errors import ServerTimeOutError
@@ -16,14 +16,9 @@ class RequestMethods(StrEnum):
 
 class SessionManager:
     def __init__(self, headers: Dict[str, str], timeout: int = 60) -> None:
-        self.client = httpx.Client(headers=headers, timeout=timeout)
-        self.aclient: httpx.AsyncClient = None
-
-    def __await__(self) -> Self:
-        return self.async_init(self.client.headers, self.client.timeout).__await__()
-
-    async def async_init(self, headers: Dict[str, str], timeout: int = 60) -> None:
-        self.aclient = httpx.AsyncClient(headers=headers, timeout=timeout)
+        self.headers = headers
+        self.timeout = timeout
+        self.client: Union[httpx.Client, httpx.AsyncClient] = None
 
     def send_requst(
         self,
@@ -46,24 +41,31 @@ class SessionManager:
         request_method: RequestMethods = RequestMethods.GET,
         params: Optional[Dict[str, str]] = None,
     ):
-        if self.aclient is None:
-            return None
+        if self.client is None:
+            return None  # TODO: add a logger here
         try:
-            request = await self.aclient.build_request(
+            request = await self.client.build_request(
                 request_method.value, url, params=params
             )
-            response = await self.aclient.send(request)
+            response = await self.client.send(request)
+            print(response)
         except httpx.HTTPStatusError as e:
             raise ServerTimeOutError(location=url) from e
         return response
 
-    def close(self):
+    def __enter__(self) -> Self:
+        self.client = httpx.Client(headers=self.headers, timeout=self.timeout)
+        return self
+
+    async def __aenter__(self) -> Self:
+        self.client = httpx.AsyncClient(headers=self.headers, timeout=self.timeout)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.client.close()
 
-    async def aclose(self):
-        if self.aclient is None:
-            return None
-        self.aclient.aclose()
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
+        await self.client.aclose()
 
 
 class Session(SessionManager):
@@ -72,7 +74,10 @@ class Session(SessionManager):
     #     return self.async_init(self.client.headers, self.client.timeout).__await__()
 
     # def async_init(self, headers: Dict[str, str], timeout: int = 60) -> None:
-    #     self.aclient = httpx.AsyncClient(headers=headers, timeout=timeout)
+    #     self.client = httpx.AsyncClient(headers=headers, timeout=timeout)
 
     def get(self, url: str, params: Optional[Dict[str, str]] = None):
         return self.send_requst(url, params=params)
+
+    async def aget(self, url: str, params: Optional[Dict[str, str]] = None):
+        return await self.asend_requst(url, params=params)

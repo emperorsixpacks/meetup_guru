@@ -11,10 +11,12 @@ from retry import retry
 from pydantic import BaseModel, HttpUrl, Field, field_serializer, ConfigDict
 from meetup.utils.global_settings import RabbitMQSettings
 
+
 class JOB_STATE(StrEnum):
     SCRAPPER = "srapper_job"
     EMAIL = "email_job"
     COMPLETED = "completed"
+
 
 class Location(BaseModel):
     logitude: float
@@ -55,7 +57,7 @@ class EventBriteCategory(BaseModel):
     short_name_localized: str
 
 
-class EventBriteSubCategory(BaseModel):
+class EventBriteSubCategory(BaseModel):  # TODO: change name to accomodate other scrapper
     id: str
     name: str
 
@@ -63,8 +65,8 @@ class EventBriteSubCategory(BaseModel):
 class ScrapperMetadata(BaseModel):
     name: str
     category: EventBriteCategory
-    country:str
-    city:str
+    country: str
+    city: str
 
     # TODO: add validators for country and city
 
@@ -159,10 +161,11 @@ class BaseRabbitMQConsumer(ABC):
         if self.connection:
             self.connection.close()
 
+
 @dataclass
 class URL:
-    scheme:str
-    path:str
+    scheme: str
+    path: str
     qparams: Dict[str, str]
 
     def construct_url(self):

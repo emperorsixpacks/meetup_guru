@@ -35,8 +35,6 @@ class EventBiteScrapper(BaseEventScrapper):
     def __return_server_data(self, path: str = None, qparams: Dict[str, str] = None):
         new_url = self.build_url(path, qparams)
         response = self.session.get(new_url).text
-        print(new_url)
-        print(self.session.get(new_url))
         parsed_html = self.parse_html(response, "script")[11].string
         soup_result = re.search(SERVER_DATA_REGEX, parsed_html).group(1)
         json_data = json.loads(soup_result)
@@ -138,3 +136,5 @@ class EventBiteScrapper(BaseEventScrapper):
             )
             for event in json_data
         ]  # TODO: write single method to handle this
+
+# TODO: collect longitude and latitude info

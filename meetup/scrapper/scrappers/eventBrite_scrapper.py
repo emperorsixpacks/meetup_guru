@@ -137,4 +137,5 @@ class EventBiteScrapper(BaseEventScrapper):
             for event in json_data
         ]  # TODO: write single method to handle this
 
+
 # TODO: collect longitude and latitude info

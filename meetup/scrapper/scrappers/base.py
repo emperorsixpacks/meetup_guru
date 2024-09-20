@@ -9,22 +9,18 @@ from meetup.utils.session_manager import Session
 class BaseEventScrapper(ABC):
     base_url: str = None
     authentication_url: str = None
-    has_authentication: bool = False
-    headers: Dict[str, str] = {}
 
-    def __init__(self) -> None:
-        self.session = self._create_session()
+    has_authentication: bool = False
+    headers: Dict[str, str] = None
+
+    def __init__(self, session:Session) -> None:
+        self.session = session
 
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "__source_name__"):
             setattr(cls, "__source_name__", cls.__name__)
         if cls.has_authentication and cls.authentication_url is None:
             raise ValueError("Provide a valid authentication url for your source")
-
-    def _create_session(self) -> Session:
-        return Session(
-            headers=self.headers,
-        )
 
     def authenticate(self):
         pass

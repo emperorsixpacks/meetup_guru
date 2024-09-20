@@ -76,3 +76,6 @@ class Session(SessionManager):
 
     async def aget(self, url: str, params: Optional[Dict[str, str]] = None):
         return await self.asend_requst(url, params=params)
+
+
+#TODO: add error handler for 301[MOVED_PARMANENTLY] error

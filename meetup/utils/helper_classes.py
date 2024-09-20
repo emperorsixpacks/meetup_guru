@@ -1,13 +1,20 @@
 from uuid import UUID, uuid4
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import time, date, datetime
 from abc import ABC, abstractmethod
+from enum import StrEnum
+from dataclasses import dataclass
+from urllib.parse import urlencode, urlparse, urlunparse
 
 import pika
 from retry import retry
-from pydantic import BaseModel, HttpUrl, Field, field_serializer
+from pydantic import BaseModel, HttpUrl, Field, field_serializer, ConfigDict
 from meetup.utils.global_settings import RabbitMQSettings
 
+class JOB_STATE(StrEnum):
+    SCRAPPER = "srapper_job"
+    EMAIL = "email_job"
+    COMPLETED = "completed"
 
 class Location(BaseModel):
     logitude: float
@@ -56,12 +63,18 @@ class EventBriteSubCategory(BaseModel):
 class ScrapperMetadata(BaseModel):
     name: str
     category: EventBriteCategory
+    country:str
+    city:str
+
+    # TODO: add validators for country and city
 
 
 class RedisJob(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     job_id: UUID = Field(default_factory=uuid4)
     name: str
     scrapper_meta_data: ScrapperMetadata
+    job_state: JOB_STATE
     is_complete: bool = Field(default=False)
     date_published: datetime = Field(default_factory=datetime.now)
 
@@ -111,8 +124,6 @@ class BaseRabbitMQConsumer(ABC):
         for queue in self.queues:
             self.channel.queue_declare(queue=queue, durable=True)
 
-        return None
-
     @abstractmethod
     def callback(self, ch, method, properties, body):
         pass
@@ -127,19 +138,15 @@ class BaseRabbitMQConsumer(ABC):
         except KeyboardInterrupt:
             self.channel.stop_consuming()
 
-    def publish(self,queue:str, message:Message):
+    def publish(self, queue: str, message: Message):
         if queue not in self.queues:
             raise ValueError("Queue not found")
         self.channel.basic_publish(
             exchange="",
             routing_key=queue,
             body=message.model_dump_json(),
-            properties = pika.BasicProperties(
-                delivery_mode=2
-            )
+            properties=pika.BasicProperties(delivery_mode=2),
         )
-        return None
-
 
     def __enter__(self):
         self._setup_connection()
@@ -151,3 +158,14 @@ class BaseRabbitMQConsumer(ABC):
 
         if self.connection:
             self.connection.close()
+
+@dataclass
+class URL:
+    scheme:str
+    path:str
+    qparams: Dict[str, str]
+
+    def construct_url(self):
+        query_string = urlencode(self.qparams, doseq=True)
+        url = urlunparse((self.scheme, self.path, "", "", query_string, ""))
+        return url

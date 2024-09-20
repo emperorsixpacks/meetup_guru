@@ -1,7 +1,11 @@
 import os
 import json
+from uuid import UUID
 from datetime import datetime
+from urllib.parse import urlparse, parse_qs
+
 from meetup.utils.base import return_app_dir
+from meetup.utils.helper_classes import URL
 
 
 def format_date(input_date: datetime):
@@ -18,7 +22,7 @@ def return_eventbrite_categories_path():
 
 def open_eventbrite_categories_json():
     with open(return_eventbrite_categories_path(), "r", encoding="utf-8") as f:
-        return json.loads(f)
+        return json.load(f)
 
 
 def get_category_by_id(category_id: int):
@@ -27,3 +31,21 @@ def get_category_by_id(category_id: int):
         (category for category in json_data if category["id"] == category_id),
         None,
     )
+
+
+def is_valid_uuid(input_str: str):
+    try:
+        UUID(input_str)
+        return True
+    except ValueError:
+        return False
+
+
+def extract_url_parts(url: str) -> URL:
+    parsed_url = urlparse(url)
+
+    scheme = parsed_url.scheme
+    path = parsed_url.path
+    query_params = parse_qs(parsed_url.query)
+
+    return URL(scheme=scheme, path=path, qparams=query_params)

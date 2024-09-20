@@ -1,3 +1,4 @@
+import json
 from uuid import UUID
 from redis import Redis
 
@@ -12,7 +13,7 @@ class RedisClient:
     def new_job(self, redis_job: RedisJob) -> RedisJob:
         new_job = self._client.set(str(redis_job.job_id), redis_job.model_dump_json())
         if new_job == 0:
-            raise FailedToCreateRedisJobError(f"Failed to create job with id {job.job_id}")
+            raise FailedToCreateRedisJobError(f"Failed to create job with id {redis_job.job_id}")
         return new_job
 
     def get_job(self, job_id: UUID) -> RedisJob:
@@ -20,7 +21,8 @@ class RedisClient:
         if job is None:
             return None
             # raise ValueError(f"Job with id {job_id} not found")  # TODO: use a logger here
-        return RedisJob.from_json(job)
+        job = json.loads(job)
+        return RedisJob.model_validate_json(job)
 
     def delete_job(self, job_id: UUID) -> bool:
         pass    

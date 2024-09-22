@@ -75,7 +75,3 @@ def flatten_events(nested_list, flat_list: List[str] = None):
         flat_list.append(item, flat_list)
 
     return flatten_events(nested_list=flat_list)
-
-
-def format_date_time_str(date_time: Union[datetime, date, time], str_format: str):
-    return date_time.strftime(str_format)

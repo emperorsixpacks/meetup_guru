@@ -4,12 +4,13 @@ from datetime import time, date, datetime
 from abc import ABC, abstractmethod
 from enum import StrEnum
 from dataclasses import dataclass
-from urllib.parse import urlencode, urlparse, urlunparse
+from urllib.parse import urlencode, urlunparse
 
 import pika
 from retry import retry
-from pydantic import BaseModel, HttpUrl, Field, field_serializer, ConfigDict
+from pydantic import BaseModel, HttpUrl, Field, field_serializer, ConfigDict, model_serializer
 from meetup.utils.global_settings import RabbitMQSettings
+from meetup.utils.helper_functions import format_date, formate_time
 
 
 class JOB_STATE(StrEnum):
@@ -42,6 +43,17 @@ class EventBriteEvent(Event):
     # location: Location
     # tags: List[str]
 
+    @model_serializer()
+    def serialize_event(self):
+        return{
+            "start_date":format_date(self.start_date),
+            "end_date":formate_time(self.end_time),
+            "start_time": formate_time(self.start_time),
+            "end_time":self.end_time(self.end_time)
+        }
+
+
+# TODO: refactor code above
 
 # class Pagination(BaseModel):
 #     page: int
@@ -57,22 +69,26 @@ class EventBriteCategory(BaseModel):
     short_name_localized: str
 
 
-class EventBriteSubCategory(BaseModel):  # TODO: change name to accomodate other scrapper
+class EventBriteSubCategory(
+    BaseModel
+):  # TODO: change name to accomodate other scrapper
     id: str
     name: str
 
 
 class ScrapperMetadata(BaseModel):
+    model_config = ConfigDict(extra="allow")
     name: str
     category: EventBriteCategory
     country: str
     city: str
+    events: Optional[list[EventBriteEvent]] = None
 
     # TODO: add validators for country and city
 
 
 class RedisJob(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     job_id: UUID = Field(default_factory=uuid4)
     name: str
     scrapper_meta_data: ScrapperMetadata
@@ -80,7 +96,7 @@ class RedisJob(BaseModel):
     is_complete: bool = Field(default=False)
     date_published: datetime = Field(default_factory=datetime.now)
 
-    @field_serializer("date_published", when_used="json")
+    @field_serializer("date_published", when_used="always")
     def serialize_date_published(self, value: datetime) -> str:
         return value.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -89,7 +105,7 @@ class Message(BaseModel):
     text: str
     date_published: datetime = Field(default_factory=datetime.now)
 
-    @field_serializer("date_published", when_used="json")
+    @field_serializer("date_published", when_used="always")
     def serialize_date_published(self, value: datetime) -> str:
 
         return value.strftime("%Y-%m-%d %H:%M:%S")

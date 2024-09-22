@@ -6,7 +6,7 @@ from meetup.utils.helper_classes import (
     BaseRabbitMQConsumer,
     Message,
     JOB_STATE,
-    RedisJob,
+    RedisJob
 )
 from meetup.utils.helper_functions import is_valid_uuid, flatten_events
 from meetup.utils.redis import RedisClient
@@ -25,9 +25,18 @@ class Scrapper(BaseRabbitMQConsumer):
     async def process_with_event_brite_scrapper(self, job: RedisJob):
         async with Session() as session:
             event_brite_scrapper = EventBiteScrapper(
-                session=session, category=job.scrapper_meta_data.category, city=job.scrapper_meta_data.city, country=job.scrapper_meta_data.city
+                session=session,
+                category=199,
+                city="abuja",
+                country="nigeria",
             ).search()
-            return await self.process(event_brite_scrapper)
+            events = await self.process(event_brite_scrapper)
+            job.scrapper_meta_data.events = events
+
+        redis_client.update_job_state(job.job_id, JOB_STATE.EMAIL)
+        redis_client.update_job(job.job_id, job)
+
+        return True
 
     def callback(self, ch, method, properties, body):
         print("I see you")
@@ -49,12 +58,12 @@ class Scrapper(BaseRabbitMQConsumer):
             running_loop = asyncio.new_event_loop()  # TODO deprecated replace
             asyncio.set_event_loop(running_loop)  # TODO deprecated replace
         running_loop.run_until_complete(self.process_with_event_brite_scrapper(job=job))
-
+        print("done")
         return None
 
     async def process(self, scrapper):
 
-        tasks = [scrapper.ascrape(page) for page in range(scrapper.total_pages + 1)]
+        tasks = [scrapper.ascrape(page) for page in range(1, scrapper.total_pages + 1)]
         response = await asyncio.gather(*tasks)
 
         return flatten_events(response)

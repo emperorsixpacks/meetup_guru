@@ -69,7 +69,7 @@ class EventBiteScrapper(BaseEventScrapper):
             self.build_url(f"d/{country.lower()}--{city.lower()}/all--events/")
             if category_id is None
             else self.build_url(
-                f"d/{country.lower()}--{city.lower()}/{get_category_by_id(category_id=category_id)['name'].lower()}--events/",
+                f"d/{country.lower()}--{city.lower()}/{get_category_by_id(category_id=category_id).name.lower()}--events/",
                 qparams={"page": 1},
             )
         )

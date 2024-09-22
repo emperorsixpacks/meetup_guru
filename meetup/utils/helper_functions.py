@@ -1,11 +1,12 @@
 import os
 import json
 from uuid import UUID
+from typing import List
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 
 from meetup.utils.base import return_app_dir
-from meetup.utils.helper_classes import URL
+from meetup.utils.helper_classes import URL, EventBriteCategory
 
 
 def format_date(input_date: datetime):
@@ -25,12 +26,14 @@ def open_eventbrite_categories_json():
         return json.load(f)
 
 
-def get_category_by_id(category_id: int):
+def get_category_by_id(category_id: int) -> EventBriteCategory:
     json_data = open_eventbrite_categories_json()
-    return next(
+    category = next(
         (category for category in json_data if category["id"] == category_id),
         None,
     )
+    print(category)
+    return EventBriteCategory.model_validate(category)
 
 
 def is_valid_uuid(input_str: str):
@@ -51,7 +54,10 @@ def extract_url_parts(url: str) -> URL:
     return URL(scheme=scheme, path=path, qparams=query_params)
 
 
-def flatten_events(nested_list, flat_list=[]):
+def flatten_events(nested_list, flat_list: List[str] = None):
+
+    if flat_list is None:
+        flat_list = []
     # Base case: if the input is not a list, return an empty list
     if not isinstance(nested_list, (list, tuple)):
         return []

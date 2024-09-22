@@ -44,7 +44,6 @@ class RedisClient:
         pass
 
     def get_job_status(self, job_id: UUID) -> bool:
-        # TODO: not implemnted, I mean I have not added the update method
         return bool(self.get_job(job_id).is_complete)
 
     def update_job_state(self, job_id: UUID, state: JOB_STATE) -> bool:

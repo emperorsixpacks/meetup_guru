@@ -53,7 +53,6 @@ class EventBriteEvent(Event):
         }
 
 
-# TODO: refactor code above
 
 # class Pagination(BaseModel):
 #     page: int

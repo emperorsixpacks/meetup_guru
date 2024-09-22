@@ -1,8 +1,8 @@
 import os
 import json
 from uuid import UUID
-from typing import List, Union
-from datetime import datetime, time, date
+from typing import List
+from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 
 from meetup.utils.base import return_app_dir

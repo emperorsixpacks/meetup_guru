@@ -1,8 +1,8 @@
 import os
 import json
 from uuid import UUID
-from typing import List
-from datetime import datetime
+from typing import List, Union
+from datetime import datetime, time, date
 from urllib.parse import urlparse, parse_qs
 
 from meetup.utils.base import return_app_dir
@@ -75,3 +75,7 @@ def flatten_events(nested_list, flat_list: List[str] = None):
         flat_list.append(item, flat_list)
 
     return flatten_events(nested_list=flat_list)
+
+
+def format_date_time_str(date_time: Union[datetime, date, time], str_format: str):
+    return date_time.strftime(str_format)

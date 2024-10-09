@@ -1,7 +1,7 @@
 import re
 import json
 import asyncio
-from typing import Dict, Self, Optional
+from typing import Dict, Self, Optional, Any
 
 from meetup.utils.session_manager import Session
 from meetup.utils.global_settings import EventBriteSettings
@@ -86,14 +86,10 @@ class EventBiteScrapper(BaseEventScrapper):
         url = extract_url_parts(self.search_url)
         url.qparams["page"] = page_number
         return url.construct_url()
-
-    def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
-        if not self.check_valid_page_number(page_number):
-            return None
-        path = self.construct_scrape_url(page_number=page_number)
-        response = self.__return_server_data(path, self.search_qpararms)
-        json_data = response["search_data"]["events"]["results"]
-
+    
+    @staticmethod
+    def create_new_event(json_data: Dict[str, Any]):
+        
         return [
             EventBriteEvent(
                 name=event.get("name"),
@@ -112,30 +108,21 @@ class EventBiteScrapper(BaseEventScrapper):
             for event in json_data
         ]
 
+
+    def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
+        if not self.check_valid_page_number(page_number):
+            return None
+        path = self.construct_scrape_url(page_number=page_number)
+        response = self.__return_server_data(path, self.search_qpararms)
+        json_data = response["search_data"]["events"]["results"]
+        return self.create_new_event(json_data=json_data)
     async def ascrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if not self.check_valid_page_number(page_number):
             return None
         path = self.construct_scrape_url(page_number=page_number)
         response = await self.__areturn_server_data(path, self.search_qpararms)
         json_data = response["search_data"]["events"]["results"]
-
-        return [
-            EventBriteEvent(
-                name=event.get("name"),
-                url=event.get("url"),
-                city=event["primary_venue"]["address"]["city"],
-                country=event["primary_venue"]["address"]["country"],
-                summary=event["summary"],
-                # address=event["address"],
-                image_url=event.get("image")["url"] if event.get("image") else None,
-                is_online_event=event["is_online_event"],
-                start_time=formate_time(event["start_time"]),
-                start_date=format_date(event["start_date"]),
-                end_time=formate_time(event["end_time"]),
-                end_date=format_date(event["end_date"]),
-            )
-            for event in json_data
-        ]  # TODO: write single method to handle this
+        return self.create_new_event(json_data=json_data)
 
 
 # TODO: collect longitude and latitude info

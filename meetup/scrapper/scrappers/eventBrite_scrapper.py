@@ -86,10 +86,10 @@ class EventBiteScrapper(BaseEventScrapper):
         url = extract_url_parts(self.search_url)
         url.qparams["page"] = page_number
         return url.construct_url()
-    
+
     @staticmethod
     def create_new_event(json_data: Dict[str, Any]):
-        
+
         return [
             EventBriteEvent(
                 name=event.get("name"),
@@ -108,7 +108,6 @@ class EventBiteScrapper(BaseEventScrapper):
             for event in json_data
         ]
 
-
     def scrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if not self.check_valid_page_number(page_number):
             return None
@@ -116,6 +115,7 @@ class EventBiteScrapper(BaseEventScrapper):
         response = self.__return_server_data(path, self.search_qpararms)
         json_data = response["search_data"]["events"]["results"]
         return self.create_new_event(json_data=json_data)
+
     async def ascrape(self, page_number: int = 1) -> list[EventBriteEvent]:
         if not self.check_valid_page_number(page_number):
             return None

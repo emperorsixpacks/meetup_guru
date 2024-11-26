@@ -1,16 +1,17 @@
-from uuid import UUID, uuid4
-from typing import List, Optional, Dict
-from datetime import time, date, datetime
 from abc import ABC, abstractmethod
-from enum import StrEnum
 from dataclasses import dataclass
+from datetime import date, datetime, time
+from enum import StrEnum
+from typing import Dict, List, Optional
 from urllib.parse import urlencode, urlunparse
+from uuid import UUID, uuid4
 
 import pika
-from retry import retry
-from pydantic import BaseModel, HttpUrl, Field, field_serializer, ConfigDict, model_serializer
 from meetup.utils.global_settings import RabbitMQSettings
 from meetup.utils.helper_functions import format_date, formate_time
+from pydantic import (BaseModel, ConfigDict, Field, HttpUrl, field_serializer,
+                      model_serializer)
+from retry import retry
 
 
 class JOB_STATE(StrEnum):
@@ -45,13 +46,12 @@ class EventBriteEvent(Event):
 
     @model_serializer()
     def serialize_event(self):
-        return{
-            "start_date":format_date(self.start_date),
-            "end_date":formate_time(self.end_time),
+        return {
+            "start_date": format_date(self.start_date),
+            "end_date": formate_time(self.end_time),
             "start_time": formate_time(self.start_time),
-            "end_time":self.end_time(self.end_time)
+            "end_time": self.end_time(self.end_time),
         }
-
 
 
 # class Pagination(BaseModel):
@@ -132,7 +132,8 @@ class BaseRabbitMQConsumer(ABC):
     )
     def _setup_connection(self) -> None:
         connection_parameters = pika.URLParameters(
-            f"amqp://{self.settings.rabbitmq_user}:{self.settings.rabbitmq_password}@{self.settings.rabbitmq_host}:{self.settings.rabbitmq_port}/"
+            f"amqp://{self.settings.rabbitmq_user}:{self.settings.rabbitmq_password}@{
+                self.settings.rabbitmq_host}:{self.settings.rabbitmq_port}/"
         )
 
         self.connection = pika.BlockingConnection(connection_parameters)

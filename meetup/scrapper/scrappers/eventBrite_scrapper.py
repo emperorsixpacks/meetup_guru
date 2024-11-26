@@ -1,18 +1,14 @@
-import re
-import json
 import asyncio
-from typing import Dict, Self, Optional, Any
+import json
+import re
+from typing import Any, Dict, Optional, Self
 
-from meetup.utils.session_manager import Session
-from meetup.utils.global_settings import EventBriteSettings
 from meetup.scrapper.scrappers.base import BaseEventScrapper
+from meetup.utils.global_settings import EventBriteSettings
 from meetup.utils.helper_classes import EventBriteEvent
-from meetup.utils.helper_functions import (
-    formate_time,
-    format_date,
-    get_category_by_id,
-    extract_url_parts,
-)
+from meetup.utils.helper_functions import (extract_url_parts, format_date,
+                                           formate_time, get_category_by_id)
+from meetup.utils.session_manager import Session
 
 SERVER_DATA_REGEX = re.compile(r"__SERVER_DATA__\s*=\s*({.*?});", re.DOTALL)
 event_brite_settings = EventBriteSettings()
@@ -69,7 +65,8 @@ class EventBiteScrapper(BaseEventScrapper):
             self.build_url(f"d/{country.lower()}--{city.lower()}/all--events/")
             if category_id is None
             else self.build_url(
-                f"d/{country.lower()}--{city.lower()}/{get_category_by_id(category_id=category_id).name.lower()}--events/",
+                f"d/{country.lower()}--{city.lower()}/{get_category_by_id(
+                    category_id=category_id).name.lower()}--events/",
                 qparams={"page": 1},
             )
         )
@@ -98,7 +95,8 @@ class EventBiteScrapper(BaseEventScrapper):
                 country=event["primary_venue"]["address"]["country"],
                 summary=event["summary"],
                 # address=event["address"],
-                image_url=event.get("image")["url"] if event.get("image") else None,
+                image_url=event.get("image")["url"] if event.get(
+                    "image") else None,
                 is_online_event=event["is_online_event"],
                 start_time=formate_time(event["start_time"]),
                 start_date=format_date(event["start_date"]),

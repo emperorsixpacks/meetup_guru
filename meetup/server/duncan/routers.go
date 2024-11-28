@@ -5,18 +5,17 @@ import (
 )
 
 type Router struct {
-  duncan *duncan
-  routes []Route
+	duncan *duncan
+	routes []Route
 }
 
-type Route struct{
+type Route struct {
 }
 
 func (this Route) GET(pattern string, handler http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		_, err := this.isValidRequestMethod(http.MethodGet, req)
-		if err != nil {
-			HttpErrMethodNoAllowed(res)
+		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
+			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
 		http.HandleFunc(pattern, handler)
 	}
@@ -24,9 +23,8 @@ func (this Route) GET(pattern string, handler http.HandlerFunc) http.HandlerFunc
 
 func (this Route) POST(pattern string, handler http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		_, err := this.isValidRequestMethod(http.MethodPost, req)
-		if err != nil {
-			HttpErrMethodNoAllowed(res)
+		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
+			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
 		http.HandleFunc(pattern, handler)
 	}

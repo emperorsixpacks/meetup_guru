@@ -2,30 +2,32 @@ package duncan
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 )
 
 var (
-	errCouldnotStartServer = errors.New("Could not start http server") // how to pass arguments to the error
-  ErrMethodNoAllowed = errors.New("Method not allowed")
+	errCouldnotStartServer = errors.New("Could not start http server")
+  ErrMethodNoAllowed = NewHTTPError("Method not allowed", http.StatusForbidden)
 )
 
-type methodNotAllowed struct {
+type HTTPError struct {
 	code int
-	err  error
+  message string
 }
 
-func (this methodNotAllowed) Error() string {
-	return this.err.Error()
+func (this HTTPError) Error() string {
+  return fmt.Sprintf("message=%v, code=%d", this.message, this.code)
 }
 
-func newMethodNotAllowed() *methodNotAllowed {
-	status_code := http.StatusForbidden
-  err := ErrMethodNoAllowed
-	return &methodNotAllowed{code: status_code, err: err}
+func NewHTTPError(message string, code int) *HTTPError {
+  return &HTTPError{
+    code: code,
+    message: message,
+  }
+}
 
+func RaiseHTTPError(http_error *HTTPError, res http.ResponseWriter){
+  http.Error(res, http_error.message, http_error.code)
 }
-func HttpErrMethodNoAllowed(res http.ResponseWriter) {
-	e := newMethodNotAllowed()
-  http.Error(res, e.Error(), e.code)
-}
+

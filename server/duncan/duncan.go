@@ -41,8 +41,6 @@ func (this *duncan) createNewRouter() {
 	this.router = &Router{r: mux.NewRouter()}
 }
 
-func (this *duncan) Router() *mux.Router {}
-
 func initHTTPserver() *http.Server {
 	return &http.Server{
 		// look at adding my own mux
@@ -60,7 +58,7 @@ func New() *duncan {
 		server: initHTTPserver(),
 	}
 	duncan_server.server.Addr = duncan_server.getServerAddress()
-	duncan_server.server.Handler = duncan_server.createNewRouter()
+	duncan_server.server.Handler = duncan_server.router.r
 
 	// add refreences here to read sever config from yml file
 	return &duncan_server

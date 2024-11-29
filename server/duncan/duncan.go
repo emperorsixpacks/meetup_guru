@@ -5,14 +5,12 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 const DEFAULT_PORT = 5000
 const DEFAULT_HOST = "127.0.0.1"
 
-type duncan struct {
+type Duncan struct {
 	name   string
 	host   string
 	port   int
@@ -20,7 +18,7 @@ type duncan struct {
 	router *Router
 }
 
-func (this *duncan) Start() {
+func (this *Duncan) Start() {
 	err := this.server.ListenAndServe()
 	log.Print("Server has started on : ", this.getServerAddress())
 	if err != nil {
@@ -29,37 +27,34 @@ func (this *duncan) Start() {
 	}
 }
 
-func (this *duncan) Stop() {
+func (this *Duncan) Stop() {
 	return
 }
 
-func (this *duncan) getServerAddress() string {
+func (this *Duncan) getServerAddress() string {
 	return fmt.Sprintf("%v:%v", this.host, this.port)
 }
 
-func (this *duncan) createNewRouter() {
-	this.router = &Router{r: mux.NewRouter()}
+func (this *Duncan) AddRouter(router *Router) {
+	this.router = router
 }
 
-func initHTTPserver() *http.Server {
-	return &http.Server{
-		// look at adding my own mux
-		Handler:      nil,
+func (this *Duncan) InitHTTPserver() {
+	this.server = &http.Server{
+		Handler:      this.router.r,
+		Addr:         this.getServerAddress(),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
+	fmt.Println(this.router.r)
 }
 
-func New() *duncan {
-	duncan_server := duncan{
-		name:   "Meetups Guru",
-		host:   DEFAULT_HOST,
-		port:   DEFAULT_PORT,
-		server: initHTTPserver(),
-	}
-	duncan_server.server.Addr = duncan_server.getServerAddress()
-	duncan_server.server.Handler = duncan_server.router.r
+func New() *Duncan {
+	duncan_server := new(Duncan)
+	duncan_server.name = "Meetups Guru"
+	duncan_server.host = DEFAULT_HOST
+	duncan_server.port = DEFAULT_PORT
 
 	// add refreences here to read sever config from yml file
-	return &duncan_server
+	return duncan_server
 }

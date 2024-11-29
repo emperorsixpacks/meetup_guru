@@ -7,7 +7,7 @@ import (
 )
 
 type Router struct {
-  r *mux.Router
+	r *mux.Router
 }
 
 func (this Router) GET(pattern string, handler http.HandlerFunc) http.HandlerFunc {
@@ -15,7 +15,7 @@ func (this Router) GET(pattern string, handler http.HandlerFunc) http.HandlerFun
 		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
 			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
-		http.HandleFunc(pattern, handler)
+		this.r.HandleFunc(pattern, handler)
 	}
 }
 
@@ -24,7 +24,7 @@ func (this Router) POST(pattern string, handler http.HandlerFunc) http.HandlerFu
 		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
 			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
-		http.HandleFunc(pattern, handler)
+		this.r.HandleFunc(pattern, handler)
 	}
 }
 
@@ -33,4 +33,8 @@ func (this Router) isValidRequestMethod(method string, r *http.Request) (bool, e
 		return false, ErrMethodNoAllowed
 	}
 	return true, nil
+}
+
+func NewDuncanRouter() *Router {
+	return &Router{r: mux.NewRouter()}
 }

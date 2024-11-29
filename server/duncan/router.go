@@ -10,13 +10,8 @@ type Router struct {
 	r *mux.Router
 }
 
-func (this Router) GET(pattern string, handler http.HandlerFunc) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
-		if err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
-			RaiseHTTPError(ErrMethodNoAllowed, res)
-		}
+func (this Router) GET(pattern string, handler func(http.ResponseWriter,*http.Request)){
 		this.r.HandleFunc(pattern, handler)
-	}
 }
 
 func (this Router) POST(pattern string, handler http.HandlerFunc) http.HandlerFunc {

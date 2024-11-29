@@ -12,7 +12,7 @@ type Router struct {
 
 func (this Router) GET(pattern string, handler http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
+		if err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
 			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
 		this.r.HandleFunc(pattern, handler)
@@ -21,18 +21,22 @@ func (this Router) GET(pattern string, handler http.HandlerFunc) http.HandlerFun
 
 func (this Router) POST(pattern string, handler http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		if _, err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
+		if err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
 			RaiseHTTPError(ErrMethodNoAllowed, res)
 		}
 		this.r.HandleFunc(pattern, handler)
 	}
 }
 
-func (this Router) isValidRequestMethod(method string, r *http.Request) (bool, error) {
+func (this Router) isValidRequestMethod(method string, r *http.Request) error {
 	if method != r.Method {
-		return false, ErrMethodNoAllowed
+		return ErrMethodNoAllowed
 	}
-	return true, nil
+	return nil
+}
+
+func (this *Router) GetHandler() *mux.Router{
+  return this.r
 }
 
 func NewDuncanRouter() *Router {

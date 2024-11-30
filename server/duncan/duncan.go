@@ -19,8 +19,10 @@ type Duncan struct {
 }
 
 func (this *Duncan) Start() {
-	err := this.server.ListenAndServe()
+	log.Print("Starting Duncan Server")
+	this.initHTTPserver()
 	log.Print("Server has started on : ", this.getServerAddress())
+	err := this.server.ListenAndServe()
 	if err != nil {
 		log.Fatal("could not start server : ", err)
 		return
@@ -39,7 +41,7 @@ func (this *Duncan) AddRouter(router *Router) {
 	this.router = router
 }
 
-func (this *Duncan) InitHTTPserver() {
+func (this *Duncan) initHTTPserver() {
 	this.server = &http.Server{
 		Handler:      this.router.r,
 		Addr:         this.getServerAddress(),
@@ -48,12 +50,15 @@ func (this *Duncan) InitHTTPserver() {
 	}
 }
 
-func New() *Duncan {
-	duncan_server := new(Duncan)
-	duncan_server.name = "Meetups Guru"
-	duncan_server.host = DEFAULT_HOST
-	duncan_server.port = DEFAULT_PORT
-
-	// add refreences here to read sever config from yml file
-	return duncan_server
+func LoadfromConfig(pathToconfig string) {
 }
+
+func Defualt() *Duncan {
+	return &Duncan{
+		name: "MeetUps Guru",
+		host: DEFAULT_HOST,
+		port: DEFAULT_PORT,
+	}
+}
+
+// TODO do not know if it will work, but how about using factory here

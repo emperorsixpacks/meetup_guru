@@ -10,19 +10,14 @@ type Router struct {
 	r *mux.Router
 }
 
-func (this Router) GET(pattern string, handler func(http.ResponseWriter,*http.Request)){
-		this.r.HandleFunc(pattern, handler)
+func (this Router) GET(pattern string, handler func(res http.ResponseWriter, req *http.Request)) {
+	this.r.HandleFunc(pattern, handler).Methods("GET")
+}
+func (this Router) POST(pattern string, handler func(res http.ResponseWriter, req *http.Request)) {
+	this.r.HandleFunc(pattern, handler).Methods("POST")
 }
 
-func (this Router) POST(pattern string, handler http.HandlerFunc) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
-		if err := this.isValidRequestMethod(http.MethodPost, req); err != nil {
-			RaiseHTTPError(ErrMethodNoAllowed, res)
-		}
-		this.r.HandleFunc(pattern, handler)
-	}
-}
-
+// Add an add route method and pass the verb explicity by default
 func (this Router) isValidRequestMethod(method string, r *http.Request) error {
 	if method != r.Method {
 		return ErrMethodNoAllowed
@@ -30,8 +25,8 @@ func (this Router) isValidRequestMethod(method string, r *http.Request) error {
 	return nil
 }
 
-func (this *Router) GetHandler() *mux.Router{
-  return this.r
+func (this *Router) GetHandler() *mux.Router {
+	return this.r
 }
 
 func NewDuncanRouter() *Router {

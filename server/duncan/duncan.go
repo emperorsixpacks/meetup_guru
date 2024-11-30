@@ -46,7 +46,6 @@ func (this *Duncan) InitHTTPserver() {
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
-	fmt.Println(this.router.r)
 }
 
 func New() *Duncan {

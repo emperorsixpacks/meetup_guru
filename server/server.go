@@ -12,7 +12,7 @@ func main() {
 		msg := "Hello world"
 		w.Write([]byte(msg))
 	})
-  router.GET("/a", func(w http.ResponseWriter, r *http.Request) {		
+  router.POST("/a", func(w http.ResponseWriter, r *http.Request) {		
     msg := "Hello me"
 		w.Write([]byte(msg))
   })

@@ -1,0 +1,14 @@
+app:
+  host: ${HOST_NAME}
+  port: ${HOST_PORT}
+  name: "MeetUps Guru"
+connection:
+  cache:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PORT}
+  database:
+    sqlite3:
+      url: pass sqlite url here 
+

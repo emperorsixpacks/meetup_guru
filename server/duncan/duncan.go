@@ -41,6 +41,10 @@ func (this *Duncan) AddRouter(router *Router) {
 	this.router = router
 }
 
+// return a new html struct
+func (this Duncan) RenderHtml(name string, data any) {
+}
+
 func (this *Duncan) initHTTPserver() {
 	this.server = &http.Server{
 		Handler:      this.router.r,

@@ -34,6 +34,6 @@ func (this *Router) GetHandler() *mux.Router {
 	return this.r
 }
 
-func NewDuncanRouter() *Router {
+func NewRouter() *Router {
 	return &Router{r: mux.NewRouter()}
 }

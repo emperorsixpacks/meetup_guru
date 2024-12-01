@@ -2,7 +2,7 @@ app:
   host: ${HOST_NAME}
   port: ${HOST_PORT}
   name: "MeetUps Guru"
-connection:
+connections:
   cache:
     redis:
       host: ${REDIS_HOST}

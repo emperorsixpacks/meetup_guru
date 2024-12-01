@@ -11,8 +11,8 @@ var (
   DuncanRouter = duncan.NewRouter()
 )
 
-func homePagehandler(res http.ResponseWriter, req *http.Request) {}
-
+func homePagehandler(res http.ResponseWriter, req *http.Request) {
+}
 func Run() {
   DuncanServer.AddRouter(DuncanRouter)
 	// this function is what we will use to run the server based

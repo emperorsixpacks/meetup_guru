@@ -12,6 +12,8 @@ type Router struct {
 
 // TODO look into the http.handler interface, I do not like passing this functions up and dan like this
 // TODO add logging to the request methods
+// TODO add content headers 
+// TODO look into adding a context manger so we do not have to pass (res http.ResponseWriter, req *http.Request) all the time 
 
 func (this Router) GET(pattern string, handler func(res http.ResponseWriter, req *http.Request)) {
 	this.r.HandleFunc(pattern, handler).Methods("GET")

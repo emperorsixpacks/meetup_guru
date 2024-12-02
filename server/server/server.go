@@ -22,9 +22,10 @@ var (
 
 func homePagehandler(res http.ResponseWriter, req *http.Request) {
 	// need to fix put it in a smaller method
-	err := DuncanServer.RenderHtml(res, "home.html", Person{
-		Name: "Andrew",
-	})
+
+	err := DuncanServer.RenderHtml(res, "home.html",duncan.Context{
+    "Name":"Andrew",
+  }) 
 	if err != nil {
 		fmt.Println(err)
 		return

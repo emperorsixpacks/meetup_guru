@@ -15,6 +15,8 @@ import (
 const DEFAULT_PORT = 5000
 const DEFAULT_HOST = "127.0.0.1"
 
+type Context map[string]any
+
 type Duncan struct {
 	name     string
 	host     string

@@ -2,8 +2,13 @@ package duncan
 
 import (
 	"fmt"
+	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -41,8 +46,39 @@ func (this *Duncan) AddRouter(router *Router) {
 	this.router = router
 }
 
-// return a new html struct
-func (this Duncan) RenderHtml(name string, data any) {
+func (this Duncan) readHtmlFileString(path string) (string, error) {
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return string(file), nil
+}
+
+func (this *Duncan) findTemplates(rootDir string) ([]string, error) {
+	cleanRoot := filepath.Clean(rootDir)
+	last_index := len(cleanRoot) + 1
+	html_files := []string{}
+	err := filepath.Walk(cleanRoot, func(path string, info fs.FileInfo, file_err error) error {
+		if !info.IsDir() && strings.HasSuffix(path, ".html") {
+			if file_err != nil {
+				return file_err
+			}
+			html_files = append(html_files, path)
+		}
+		return nil
+	})
+	return html_files, err
+}
+func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name string, html_string string) error {
+	new_template := rootTemplate.New(name)
+	_, err := new_template.Parse(html_string)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (this *Duncan) LoadTemplates() error {
+	rootTemaplate := template.New("")
 }
 
 func (this *Duncan) initHTTPserver() {

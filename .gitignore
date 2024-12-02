@@ -1,5 +1,7 @@
 __pycache__/
+node_modules/*
 .venv/
+ppackage-lock.json
 poetry.lock
 logs/
 .env

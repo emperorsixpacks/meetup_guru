@@ -2,9 +2,8 @@ package server
 
 import (
 	"fmt"
-	"html/template"
-	"net/http"
 	"meetUpGuru/m/duncan"
+	"net/http"
 )
 
 type Person struct {
@@ -20,22 +19,10 @@ var (
 // we wil have to write a separate function to load all the templates
 // TODO return a 500 then log message for template errors
 // TODO I preferethis approach to panic and stoping the excution
-func LoadFromGlobal() (*template.Template, error) {
-  parsed_template, err := findAndParseTemplates("../public/serverTemplates")
-	//parsed_template, err := template.New("").ParseGlob("/home/adavid/Documents/GitHub/meetup_guru/public/**/*")
-	if err != nil {
-		return nil, err
-	}
-	return parsed_template, nil
-}
 
 func homePagehandler(res http.ResponseWriter, req *http.Request) {
-	parsed_template, err := LoadFromGlobal()
-	if err != nil {
-		fmt.Println("Could not load template", err)
-		return
-	}
-	err = parsed_template.ExecuteTemplate(res, "pages/page1.html", Person{
+	// need to fix put it in a smaller method
+	err := DuncanServer.Template.ExecuteTemplate(res, "home.html", Person{
 		Name: "Andrew",
 	})
 	if err != nil {
@@ -46,6 +33,7 @@ func homePagehandler(res http.ResponseWriter, req *http.Request) {
 func Run() {
 	DuncanRouter.GET("/", homePagehandler)
 	DuncanServer.AddRouter(DuncanRouter)
+	DuncanServer.LoadTemplates("../public/serverTemplates")
 	DuncanServer.Start()
 	// this function is what we will use to run the server based
 	// on what we have created

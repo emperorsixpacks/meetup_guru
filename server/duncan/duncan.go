@@ -16,11 +16,12 @@ const DEFAULT_PORT = 5000
 const DEFAULT_HOST = "127.0.0.1"
 
 type Duncan struct {
-	name   string
-	host   string
-	port   int
-	server *http.Server
-	router *Router
+	name     string
+	host     string
+	port     int
+	server   *http.Server
+	router   *Router
+	Template *template.Template
 }
 
 func (this *Duncan) Start() {
@@ -68,9 +69,13 @@ func (this *Duncan) findTemplates(cleanRoot string) (int, []string, error) {
 	})
 	return last_index, html_files, err
 }
-func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name string, html_string string) error {
+func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name string, html_path string) error {
 	new_template := rootTemplate.New(name)
-	_, err := new_template.Parse(html_string)
+	html_file, err := os.ReadFile(html_path)
+  if err != nil {
+    return err
+  }
+	_, err = new_template.Parse(string(html_file))
 	if err != nil {
 		return err
 	}
@@ -79,23 +84,25 @@ func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name st
 
 func (this *Duncan) loadTemplate(template_path string) error {
 	rootTemaplate := template.New("")
-	cleanRoot := filepath.Clean(template_path)
+	//	cleanRoot := filepath.Clean(template_path)
 	last_index, html_files, err := this.findTemplates(template_path)
 	if err != nil {
 		return err
 	}
 	for _, html_file := range html_files {
-    name := cleanRoot[last_index:]
+
+		name := html_file[last_index:]
 		err := this.parseTemplatetoRoot(rootTemaplate, name, html_file)
-    if err != nil{
-      return err
-    }
+		if err != nil {
+			return err
+		}
 	}
-  return nil
+	this.Template = rootTemaplate
+	return nil
 }
 
 func (this *Duncan) LoadTemplates(template_path string) error {
-  return this.loadTemplate(template_path)
+	return this.loadTemplate(template_path)
 }
 
 func (this *Duncan) initHTTPserver() {

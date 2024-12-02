@@ -1,6 +1,5 @@
 from functools import partial
 from typing import Dict
-from urllib.parse import urlencode, urljoin
 
 
 class BaseEventScrapper(partial):

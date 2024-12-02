@@ -105,6 +105,14 @@ func (this *Duncan) LoadTemplates(template_path string) error {
 	return this.loadTemplate(template_path)
 }
 
+func (this Duncan) RenderHtml(w http.ResponseWriter, name string, data interface{}) error{
+	err := this.Template.ExecuteTemplate(w, name, data)
+  if err != nil{
+    return err
+  }
+  return nil
+}
+
 func (this *Duncan) initHTTPserver() {
 	this.server = &http.Server{
 		Handler:      this.router.r,

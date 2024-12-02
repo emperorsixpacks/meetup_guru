@@ -54,8 +54,7 @@ func (this Duncan) readHtmlFileString(path string) (string, error) {
 	return string(file), nil
 }
 
-func (this *Duncan) findTemplates(rootDir string) ([]string, error) {
-	cleanRoot := filepath.Clean(rootDir)
+func (this *Duncan) findTemplates(cleanRoot string) (int, []string, error) {
 	last_index := len(cleanRoot) + 1
 	html_files := []string{}
 	err := filepath.Walk(cleanRoot, func(path string, info fs.FileInfo, file_err error) error {
@@ -67,7 +66,7 @@ func (this *Duncan) findTemplates(rootDir string) ([]string, error) {
 		}
 		return nil
 	})
-	return html_files, err
+	return last_index, html_files, err
 }
 func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name string, html_string string) error {
 	new_template := rootTemplate.New(name)
@@ -77,8 +76,26 @@ func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name st
 	}
 	return nil
 }
-func (this *Duncan) LoadTemplates() error {
+
+func (this *Duncan) loadTemplate(template_path string) error {
 	rootTemaplate := template.New("")
+	cleanRoot := filepath.Clean(template_path)
+	last_index, html_files, err := this.findTemplates(template_path)
+	if err != nil {
+		return err
+	}
+	for _, html_file := range html_files {
+    name := cleanRoot[last_index:]
+		err := this.parseTemplatetoRoot(rootTemaplate, name, html_file)
+    if err != nil{
+      return err
+    }
+	}
+  return nil
+}
+
+func (this *Duncan) LoadTemplates(template_path string) error {
+  return this.loadTemplate(template_path)
 }
 
 func (this *Duncan) initHTTPserver() {

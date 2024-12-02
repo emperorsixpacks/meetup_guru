@@ -3,12 +3,7 @@ package server
 import (
 	"fmt"
 	"html/template"
-	"io/fs"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"meetUpGuru/m/duncan"
 )
 
@@ -21,31 +16,6 @@ var (
 	DuncanServer = duncan.Defualt()
 	DuncanRouter = duncan.NewRouter()
 )
-
-func findAndParseTemplates(rootDir string) (*template.Template, error) {
-	cleanRoot := filepath.Clean(rootDir)
-	pfx := len(cleanRoot) + 1 // I do not know what this does
-	rootTemplate := template.New("")
-	err := filepath.Walk(cleanRoot, func(path string, info fs.FileInfo, err error) error {
-		if !info.IsDir() && strings.HasSuffix(path, ".html") {
-			if err != nil {
-				return err
-			}
-			file, err2 := os.ReadFile(path)
-			if err2 != nil {
-				return err2
-			}
-			name := path[pfx:]
-			t := rootTemplate.New(name)
-			_, err2 = t.Parse(string(file))
-      if err2 != nil{
-        return err2
-      }
-		}
-    return nil
-	})
-  return rootTemplate, err
-}
 
 // we wil have to write a separate function to load all the templates
 // TODO return a 500 then log message for template errors

@@ -5,6 +5,7 @@ from typing import List
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 
+from bs4 import BeautifulSoup
 from meetup.utils.base import return_app_dir
 from meetup.utils.helper_classes import URL, EventBriteCategory
 
@@ -75,3 +76,9 @@ def flatten_events(nested_list, flat_list: List[str] = None):
         flat_list.append(item, flat_list)
 
     return flatten_events(nested_list=flat_list)
+
+
+def parse_html(html_response, tag):
+    soup = BeautifulSoup(html_response, "html.parser")
+    soup_result = soup.find_all(tag)
+    return soup_result

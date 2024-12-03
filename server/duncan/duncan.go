@@ -84,7 +84,7 @@ func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name st
 	return nil
 }
 
-func (this *Duncan) loadTemplate(template_path string) error {
+func (this *Duncan) loadTemplates(template_path string) error {
 	rootTemaplate := template.New("")
 	//	cleanRoot := filepath.Clean(template_path)
 	last_index, html_files, err := this.findTemplates(template_path)
@@ -102,9 +102,10 @@ func (this *Duncan) loadTemplate(template_path string) error {
 	this.Template = rootTemaplate
 	return nil
 }
+// Look into moving all these template stuff to another place 
 
 func (this *Duncan) LoadTemplates(template_path string) error {
-	return this.loadTemplate(template_path)
+	return this.loadTemplates(template_path)
 }
 
 func (this Duncan) RenderHtml(w http.ResponseWriter, name string, data interface{}) error{

@@ -9,4 +9,5 @@ demo.json
 demo.py
 target/
 Cargo.lock
+dev.conf
 migrations/

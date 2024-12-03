@@ -18,4 +18,4 @@ type ConnnectionConfig struct {
 type DuncanConfig struct {
 	app         AppConfig
 	connections ConnnectionConfig
-}
+} 

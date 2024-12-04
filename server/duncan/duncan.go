@@ -23,7 +23,7 @@ type Duncan struct {
 	port     int
 	server   *http.Server
 	router   *Router
-	Template *template.Template
+	template *template.Template
 }
 
 func (this *Duncan) Start() {
@@ -99,7 +99,7 @@ func (this *Duncan) loadTemplates(template_path string) error {
 			return err
 		}
 	}
-	this.Template = rootTemaplate
+	this.template = rootTemaplate
 	return nil
 }
 // Look into moving all these template stuff to another place 
@@ -109,7 +109,7 @@ func (this *Duncan) LoadTemplates(template_path string) error {
 }
 
 func (this Duncan) RenderHtml(w http.ResponseWriter, name string, data interface{}) error{
-	err := this.Template.ExecuteTemplate(w, name, data)
+	err := this.template.ExecuteTemplate(w, name, data)
   if err != nil{
     return err
   }

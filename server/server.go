@@ -1,4 +1,4 @@
-package server
+package main 
 
 import (
 	"fmt"
@@ -17,7 +17,6 @@ var (
 
 func homePagehandler(res http.ResponseWriter, req *http.Request) {
 	// need to fix put it in a smaller method
-
 	err := DuncanServer.RenderHtml(res, "home.html", duncan.Context{
 		"Name": "Andrew",
 	})

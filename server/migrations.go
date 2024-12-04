@@ -1,10 +1,27 @@
-package main 
+package main
 
 import (
-  "gorm.io/driver/postgres"
-  "gorm.io/gorm"
+	"fmt"
+	"meetUpGuru/m/models"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
-func main()  {
-  dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
-  conns, err := gorm.Open(postgres.Open(dsn))
+
+const DSN = "host=localhost user=postgres password=12345 dbname=meetups_guru port=5432 sslmode=disable TimeZone=Africa/Lagos"
+// TODO add a connecion pool 
+func main() {
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  DSN,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
+	if err != nil {
+		err_message := fmt.Sprintf("Could not open database %v", err)
+		panic(err_message)
+	}
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		fmt.Println("Could not run migrations")
+	}
+
 }

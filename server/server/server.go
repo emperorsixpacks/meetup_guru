@@ -20,12 +20,10 @@ var (
 	_ = controllers.NewConnection(&Connection)
 )
 
-func MakeMigrations() {
-  controllers.MakeMigrations()
-}
-
 func Run(){
-
+  DuncanServer.LoadTemplates("../public/serverTemplates")
+  DuncanServer.AddRouter(DuncanRouter)
+  DuncanServer.Start()
 }
 
 // TODO return a 500 then log message for template errors

@@ -1,4 +1,4 @@
-package controllers
+package models
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 
 type UserSchema struct {
 	Base
-	FirstName string    `form:"first_name"`
-	LastName  string    `form:"last_name"`
-	Username  string    `form:"username" gorm:"unique"`
-	Email     string    `form:"email" gorm:"type:varchar(110);unique"`
+	FirstName string `form:"first_name"`
+	LastName  string `form:"last_name"`
+	Username  string `form:"username" gorm:"unique"`
+	Email     string `form:"email" gorm:"type:varchar(110);unique"`
 	password  string
 }
 
@@ -20,14 +20,14 @@ func (this *UserSchema) SetPassword(password string) {
 	this.password = password
 }
 
-type user struct {
+type User struct {
 	gorm.Model
-  UserSchema
-	User_id   uuid.UUID `gorm:"type:uuid;primary_key"`
-	Passord_hash string `form:"password"`
+	UserSchema
+	User_id      uuid.UUID `gorm:"type:uuid;primary_key"`
+	Passord_hash string    `form:"password"`
 }
 
-func (u *user) BeforeCreate(tx *gorm.DB) (err error) {
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.User_id = uuid.New()
 	u.Passord_hash = u.password
 	return

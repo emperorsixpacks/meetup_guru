@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"meetUpGuru/m/controllers"
 	"meetUpGuru/m/server"
 	"os"
 )
@@ -13,7 +12,7 @@ func main() {
 		server.Run()
 	case "migrate":
     fmt.Println("Runnig migrations")
-		controllers.MakeMigrations()
+		server.MakeMigrations()
     fmt.Println("Done runnig migrations")
 	default:
 		fmt.Println("No argument provided")

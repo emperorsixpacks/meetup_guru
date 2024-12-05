@@ -1,7 +1,9 @@
 package controllers
 
-func CreateUserController(new_user *UserSchema) {
-	new_db_user := &user{UserSchema: *new_user}
+import "meetUpGuru/m/models"
+
+func CreateUserController(new_user *models.UserSchema) {
+	new_db_user := &models.User{UserSchema: *new_user}
 	baseDB.Create(new_db_user)
 
 }

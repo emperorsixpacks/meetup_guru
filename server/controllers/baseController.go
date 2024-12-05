@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -12,22 +11,15 @@ import (
 
 var baseDB *gorm.DB
 
-type Base struct {
-	CreatedAt time.Time
-	UpdatedAt time.Time // in the documentation, they used an int64, I wonder why
-	Updated   int64     `gorm:"autoUpdateTime:nano"`
-	Created   int64     `gorm:"autoCreateTime"`
-}
-
 type Connection interface {
 	GetConnectionName() string
 	ConnectionString() string
 }
 
-func NewConnection(conn ...Connection) error {
+func NewConnection(conn ...Connection) (*gorm.DB, error) {
 	if baseDB == nil {
 		if len(conn) == 0 {
-			return errors.New("Could not establish connection")
+			return nil, errors.New("Could not establish connection")
 		}
 		err := newConnection(conn[0])
 		if err != nil {
@@ -35,7 +27,7 @@ func NewConnection(conn ...Connection) error {
 			os.Exit(1)
 		}
 	}
-	return nil
+	return baseDB, nil
 }
 
 func newConnection(conn Connection) error {
@@ -46,7 +38,7 @@ func newConnection(conn Connection) error {
 			return err
 		}
 		baseDB = db
-    return nil
+		return nil
 	}
 	return errors.New("Could not create connection")
 }

@@ -28,3 +28,4 @@ func Run(){
 
 // TODO return a 500 then log message for template errors
 // TODO I preferethis approach to panic and stoping the excution
+// TODO conneectin params should come from an env for from duncan connection

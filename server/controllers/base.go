@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var baseDB *BaseDB
+var baseDB *gorm.DB
 
 type Base struct {
 	CreatedAt time.Time
@@ -22,20 +22,15 @@ type Connection interface {
 	ConnectionString() string
 }
 
-type BaseDB struct {
-	db   *gorm.DB
-	conn Connection
-} // not to be confused with db from gorm
 
-
-func GetConnection(conn ...Connection) (*gorm.DB, error) {
+func NewConnection(conn ...Connection) error {
 	if baseDB == nil {
 		if len(conn) <= 0 {
-			return nil, errors.New("Could not establish connection")
+			return errors.New("Could not establish connection")
 		}
 		newConnection(conn[0])
 	}
-	return baseDB.db, nil
+	return nil
 }
 
 func newConnection(conn Connection) error {
@@ -45,8 +40,8 @@ func newConnection(conn Connection) error {
 		if err != nil {
 			return err
 		}
-		baseDB = &BaseDB{db: db, conn: conn}
-	}
+		baseDB = db
+  }
 	return errors.New("Could not create connection")
 }
 

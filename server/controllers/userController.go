@@ -1,18 +1,7 @@
 package controllers
 
-import (
+func CreateUserController(new_user *UserSchema) {
+	new_db_user := &user{user: *new_user}
+	baseDB.Create(new_db_user)
 
-	"gorm.io/gorm"
-)
-
-type Controller struct {
-	connection *gorm.DB
-}
-
-func (this *Controller) GetConnection() *gorm.DB {
-	return this.connection
-}
-
-func (this *Controller) CreateUserController(user *UserSchema) {
-  this.connection.Create(user)
 }

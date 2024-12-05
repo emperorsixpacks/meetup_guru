@@ -11,11 +11,12 @@ func main() {
 	case "run":
 		server.Run()
 	case "migrate":
-    fmt.Println("Runnig migrations")
+		fmt.Println("Runnig migrations")
 		server.MakeMigrations()
-    fmt.Println("Done runnig migrations")
+		fmt.Println("Done runnig migrations")
 	default:
 		fmt.Println("No argument provided")
 	}
 }
+
 // TODO why is this slow

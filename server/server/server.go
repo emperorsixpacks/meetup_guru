@@ -12,7 +12,7 @@ import (
 var (
 	DuncanServer = duncan.Defualt()
 	DuncanRouter = duncan.NewRouter()
-	PGConnection   = PostgresConnection{
+	PGConnection = PostgresConnection{
 		host:     "localhost",
 		port:     "5432",
 		user:     "postgres",

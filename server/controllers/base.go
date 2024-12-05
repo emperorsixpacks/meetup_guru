@@ -8,6 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var baseDB *BaseDB
+
 type Base struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time // in the documentation, they used an int64, I wonder why
@@ -20,25 +22,30 @@ type Connection interface {
 	ConnectionString() string
 }
 
-type DB struct {
+type BaseDB struct {
 	db   *gorm.DB
 	conn Connection
 } // not to be confused with db from gorm
 
-func (this *DB) GetConnection() {}
 
-func (this *DB) setDb(newdb *gorm.DB) {
-	this.db = newdb
+func GetConnection(conn ...Connection) (*gorm.DB, error) {
+	if baseDB == nil {
+		if len(conn) <= 0 {
+			return nil, errors.New("Could not establish connection")
+		}
+		newConnection(conn[0])
+	}
+	return baseDB.db, nil
 }
 
-func (this *DB) newConnection(conn Connection) error {
+func newConnection(conn Connection) error {
 	// TODO when we make this largers, we can add switch
 	if conn.GetConnectionName() == "postgres" {
 		db, err := newPostgresConnection(conn)
 		if err != nil {
 			return err
 		}
-		this.setDb(db)
+		baseDB = &BaseDB{db: db, conn: conn}
 	}
 	return errors.New("Could not create connection")
 }

@@ -10,6 +10,7 @@ func MakeMigrations() {
 	err := baseDB.AutoMigrate(&user{})
 	if err != nil {
 		fmt.Println("Could not run migrations")
+		fmt.Print(err)
 	}
 
 }

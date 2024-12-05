@@ -29,7 +29,7 @@ type user struct {
 
 func (u *user) BeforeCreate(tx *gorm.DB) (err error) {
 	u.User_id = uuid.New()
-  u.Passord_hash = u.password
+	u.Passord_hash = u.password
 	return
 }
 

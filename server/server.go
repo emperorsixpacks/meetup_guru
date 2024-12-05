@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// TODO we have to look for a way to make db connections once we start our server and way to mange that context through out our app so we do not have to pass db all the time
 // Add the base router here, can import sub routes from other routers, they should have teh same interface, so that we can easily add them here, so in the other routers we ill just do Router.NewRouter(), then here, we can do douter.add_sub_router()
 var (
 	DuncanServer = duncan.Defualt()
@@ -32,4 +33,8 @@ func Run() {
 	DuncanServer.Start()
 	// this function is what we will use to run the server based
 	// on what we have created
+}
+
+func MakeMigrations(){
+
 }

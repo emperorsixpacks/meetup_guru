@@ -16,7 +16,7 @@ type Connection interface {
 	ConnectionString() string
 }
 
-func NewConnection(conn ...Connection) (*gorm.DB, error) {
+func getConnection(conn ...Connection) (*gorm.DB, error) {
 	if baseDB == nil {
 		if len(conn) == 0 {
 			return nil, errors.New("Could not establish connection")

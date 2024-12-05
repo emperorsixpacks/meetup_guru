@@ -24,7 +24,7 @@ var (
 )
 
 func GetConnection() *gorm.DB {
-	baseDB, err := NewConnection(&PGConnection)
+	baseDB, err := getConnection(&PGConnection)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

@@ -9,7 +9,6 @@ import (
 
 type UserSchema struct {
 	Base
-	User_id   uuid.UUID `gorm:"type:uuid;primary_key"`
 	FirstName string    `form:"first_name"`
 	LastName  string    `form:"last_name"`
 	Username  string    `form:"username" gorm:"unique"`
@@ -24,6 +23,7 @@ func (this *UserSchema) SetPassword(password string) {
 type user struct {
 	gorm.Model
   UserSchema
+	User_id   uuid.UUID `gorm:"type:uuid;primary_key"`
 	Passord_hash string `form:"password"`
 }
 

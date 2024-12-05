@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -22,13 +24,16 @@ type Connection interface {
 	ConnectionString() string
 }
 
-
 func NewConnection(conn ...Connection) error {
 	if baseDB == nil {
-		if len(conn) <= 0 {
+		if len(conn) == 0 {
 			return errors.New("Could not establish connection")
 		}
-		newConnection(conn[0])
+		err := newConnection(conn[0])
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 	return nil
 }
@@ -41,7 +46,8 @@ func newConnection(conn Connection) error {
 			return err
 		}
 		baseDB = db
-  }
+    return nil
+	}
 	return errors.New("Could not create connection")
 }
 

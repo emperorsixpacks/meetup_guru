@@ -23,13 +23,13 @@ func (this *UserSchema) SetPassword(password string) {
 
 type user struct {
 	gorm.Model
-	user         UserSchema
+  UserSchema
 	Passord_hash string `form:"password"`
 }
 
 func (u *user) BeforeCreate(tx *gorm.DB) (err error) {
-	u.user.User_id = uuid.New()
-	u.Passord_hash = u.user.password
+	u.User_id = uuid.New()
+	u.Passord_hash = u.password
 	return
 }
 
@@ -37,10 +37,4 @@ func (u *UserSchema) FullName() string {
 	full_name := fmt.Sprintf("%v %v", u.FirstName, u.LastName)
 	return full_name
 
-}
-
-// look at a way of passin the current db context
-
-func New() {
-	return
 }

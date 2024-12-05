@@ -23,13 +23,13 @@ func (this *UserSchema) SetPassword(password string) {
 
 type user struct {
 	gorm.Model
-	UserSchema
+	user         UserSchema
 	Passord_hash string `form:"password"`
 }
 
 func (u *user) BeforeCreate(tx *gorm.DB) (err error) {
-	u.User_id = uuid.New()
-	u.Passord_hash = u.password
+	u.user.User_id = uuid.New()
+	u.Passord_hash = u.user.password
 	return
 }
 

@@ -17,6 +17,12 @@ const DEFAULT_HOST = "127.0.0.1"
 
 type Context map[string]any
 
+type RedisConnetion struct {
+	Addr string
+	Password string
+	DB   int
+}
+
 type Duncan struct {
 	name     string
 	host     string
@@ -74,9 +80,9 @@ func (this *Duncan) findTemplates(cleanRoot string) (int, []string, error) {
 func (this *Duncan) parseTemplatetoRoot(rootTemplate *template.Template, name string, html_path string) error {
 	new_template := rootTemplate.New(name)
 	html_file, err := os.ReadFile(html_path)
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 	_, err = new_template.Parse(string(html_file))
 	if err != nil {
 		return err
@@ -102,18 +108,19 @@ func (this *Duncan) loadTemplates(template_path string) error {
 	this.template = rootTemaplate
 	return nil
 }
-// Look into moving all these template stuff to another place 
+
+// Look into moving all these template stuff to another place
 
 func (this *Duncan) LoadTemplates(template_path string) error {
 	return this.loadTemplates(template_path)
 }
 
-func (this Duncan) RenderHtml(w http.ResponseWriter, name string, data interface{}) error{
+func (this Duncan) RenderHtml(w http.ResponseWriter, name string, data interface{}) error {
 	err := this.template.ExecuteTemplate(w, name, data)
-  if err != nil{
-    return err
-  }
-  return nil
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (this *Duncan) initHTTPserver() {

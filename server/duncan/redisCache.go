@@ -14,13 +14,13 @@ type RedisClient struct {
 }
 
 // this should return `json:""`
-func (this RedisClient) Get(key string)  {
-  // NOTE this works
-	val, err := this.rdb.JSONGet(ctx, key).Expanded()
+func (this RedisClient) Get(key string, output interface{}) (interface{}, error) {
+	// NOTE this works
+	_, err := this.rdb.JSONGet(ctx, key).Expanded()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	fmt.Println(val)
+	return nil, nil
 }
 
 // this should get json
@@ -33,5 +33,11 @@ func NewRedisclient(conn RedisConnetion) *RedisClient {
 		DB:       conn.DB,
 	}
 	client := redis.NewClient(options)
+  err := client.Ping(ctx).Err()
+  if err != nil{
+    message :=fmt.Sprintf("could not connect on %s \n%v", conn.Addr, err)
+    fmt.Println(message)
+    return nil
+  }
 	return &RedisClient{rdb: client}
 }

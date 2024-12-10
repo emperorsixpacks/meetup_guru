@@ -3,6 +3,7 @@ package duncan
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
@@ -17,29 +18,43 @@ type RedisClient struct {
 // TODO try to make this simpler
 func (this RedisClient) GetJSON(k string, o interface{}) error {
 	// NOTE this works
-	val, err := this.rdb.JSONGet(ctx, k).Result()
-	if err != nil {
-		return err
+	val, err := this.getJSON(k)
+	str_val, ok := val.(string) // TODO read on how this guy works
+	if !ok {
+		return errors.New("Internal error")
 	}
-	if err = json.Unmarshal([]byte(val), o); err != nil {
+	if err = json.Unmarshal([]byte(str_val), o); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// this should get json
+func (this RedisClient) getJSON(k string, inner_key ...string) (interface{}, error) {
+	if len(inner_key) == 0 {
+		inner_key[0] = "$"
+	}
+	val, err := this.rdb.JSONGet(ctx, k, inner_key[0]).Result()
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
+}
+
+// we can even expand this further to get the data in a nestad json
+// let us go ahead now and create some hidden methods to handle this
 func (this RedisClient) SetJSON(key string, value interface{}) error {
 	val, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	err = this.rdb.JSONSet(ctx, key,"$", val).Err()
+	err = this.rdb.JSONSet(ctx, key, "$", val).Err()
 	if err != nil {
 		return err
 	}
 	return nil
 }
+func (this RedisClient) setJSON(key string, inner_key ...string)  {}
 func (this RedisClient) DeleteJSON(key string, value interface{}) {}
 func (this RedisClient) UpdateJSON(key string, value interface{}) {}
 

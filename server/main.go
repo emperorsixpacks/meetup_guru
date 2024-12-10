@@ -1,5 +1,8 @@
 package main
 
+import "meetUpGuru/m/duncan"
+
+/*
 import (
 	"fmt"
 	"meetUpGuru/m/server"
@@ -18,5 +21,16 @@ func main() {
 		fmt.Println("No argument provided")
 	}
 }
+*/
 
+func main(){
+  
+  client := duncan.NewRedisclient(duncan.RedisConnetion{
+    Addr: "localhost:6379",
+    Password: "",
+    DB: 0,
+  })
+  client.Get("hello")
+}
 // TODO why is this slow
+// TODO learn how to ans why we use github to import packages

@@ -2,26 +2,31 @@ package duncan
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/redis/go-redis/v9"
 )
 
 var ctx = context.Background() // I do not know, should I put this in the struct
-
+// TODO look into making this a singleton
 type RedisClient struct {
 	rdb *redis.Client
 }
 
-func (this RedisClient) Get(key string) string {
-	val, err := this.rdb.Get(ctx, key).Result()
+// this should return `json:""`
+func (this RedisClient) Get(key string)  {
+  // NOTE this works
+	val, err := this.rdb.JSONGet(ctx, key).Expanded()
 	if err != nil {
 		panic(err)
 	}
-	return val // some type convertion has to come here because we are returning a string, but we are getting json
-
+	fmt.Println(val)
 }
 
-func newredisclient(conn RedisConnetion) *RedisClient {
+// this should get json
+func (this RedisClient) Set(key string, value interface{}) {}
+
+func NewRedisclient(conn RedisConnetion) *RedisClient {
 	options := &redis.Options{
 		Addr:     conn.Addr,
 		Password: conn.Password,

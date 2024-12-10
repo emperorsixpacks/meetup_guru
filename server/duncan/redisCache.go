@@ -2,6 +2,7 @@ package duncan
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
@@ -14,30 +15,37 @@ type RedisClient struct {
 }
 
 // this should return `json:""`
-func (this RedisClient) Get(key string, output interface{}) (interface{}, error) {
+func (this RedisClient) Get(k string, o any) (interface{}, error) {
 	// NOTE this works
-	_, err := this.rdb.JSONGet(ctx, key).Expanded()
+	val, err := this.rdb.JSONGet(ctx, k).Result()
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	if err = json.Unmarshal([]byte(val), o); err != nil {
+		return nil, err
+	}
+
+	return o, nil
 }
 
 // this should get json
 func (this RedisClient) Set(key string, value interface{}) {}
 
-func NewRedisclient(conn RedisConnetion) *RedisClient {
+// this should be private, and later, we should have only getconnection, var, should com from duncan config
+func NewRedisclient(conn RedisConnetion) (*RedisClient, error) {
+	newClient := new(RedisClient)
 	options := &redis.Options{
 		Addr:     conn.Addr,
 		Password: conn.Password,
 		DB:       conn.DB,
 	}
 	client := redis.NewClient(options)
-  err := client.Ping(ctx).Err()
-  if err != nil{
-    message :=fmt.Sprintf("could not connect on %s \n%v", conn.Addr, err)
-    fmt.Println(message)
-    return nil
-  }
-	return &RedisClient{rdb: client}
+	err := client.Ping(ctx).Err()
+	if err != nil {
+		message := fmt.Sprintf("could not connect on %s \n%v", conn.Addr, err)
+		fmt.Println(message)
+		return nil, err
+	}
+	newClient.rdb = client
+	return newClient, nil
 }

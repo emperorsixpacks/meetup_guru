@@ -13,7 +13,7 @@ type RedisClient struct {
 }
 
 func (this RedisClient) Get(key string) string {
-	val, err := this.rdb.Get(ctx,key).Result()
+	val, err := this.rdb.Get(ctx, key).Result()
 	if err != nil {
 		panic(err)
 	}

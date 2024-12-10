@@ -15,6 +15,13 @@ type RedisClient struct {
 	rdb *redis.Client
 }
 
+func (this *RedisClient) clearDB() error {
+	if err := this.rdb.FlushAll(ctx).Err(); err != nil {
+		return err
+	}
+  return nil
+}
+
 // TODO try to make this simpler
 func (this RedisClient) GetJSON(k string, o interface{}) error {
 	// NOTE this works

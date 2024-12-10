@@ -15,17 +15,17 @@ type RedisClient struct {
 }
 
 // this should return `json:""`
-func (this RedisClient) Get(k string, o any) (interface{}, error) {
+func (this RedisClient) GetJSON(k string, o any) error {
 	// NOTE this works
 	val, err := this.rdb.JSONGet(ctx, k).Result()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if err = json.Unmarshal([]byte(val), o); err != nil {
-		return nil, err
+		return err
 	}
 
-	return o, nil
+	return nil
 }
 
 // this should get json

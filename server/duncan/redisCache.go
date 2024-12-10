@@ -44,17 +44,27 @@ func (this RedisClient) getJSON(k string, inner_key ...string) (interface{}, err
 // we can even expand this further to get the data in a nestad json
 // let us go ahead now and create some hidden methods to handle this
 func (this RedisClient) SetJSON(key string, value interface{}) error {
+	if err := this.setJSON(key, value); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (this RedisClient) setJSON(key string, value interface{}, inner_key ...string) error {
 	val, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	err = this.rdb.JSONSet(ctx, key, "$", val).Err()
+	if len(inner_key) == 0 {
+		inner_key[0] = "$"
+	}
+	err = this.rdb.JSONSet(ctx, key, inner_key[0], val).Err()
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (this RedisClient) setJSON(key string, inner_key ...string)  {}
 func (this RedisClient) DeleteJSON(key string, value interface{}) {}
 func (this RedisClient) UpdateJSON(key string, value interface{}) {}
 

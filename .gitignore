@@ -11,3 +11,4 @@ target/
 Cargo.lock
 dev.conf
 migrations/
+duncan_config.yml

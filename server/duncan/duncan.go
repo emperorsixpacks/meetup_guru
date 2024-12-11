@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 const DEFAULT_PORT = 5000
@@ -24,12 +26,12 @@ func validPath(configPath string) error {
 	}
 	return nil
 }
-func loadCOnfig(filePath string, ){
-  file, err := os.ReadFile(filePath)
-  if err != nil{
-    return err
-  }
-
+func loadConfig(filePath string) ([]byte, error) {
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 type RedisConnetion struct {
@@ -49,7 +51,7 @@ type Duncan struct {
 
 func (this *Duncan) Start() {
 	log.Print("Starting Duncan Server")
-  log.Print("Server has started on : ", this.getServerAddress())
+	log.Print("Server has started on : ", this.getServerAddress())
 	this.initHTTPserver()
 	err := this.server.ListenAndServe()
 	if err != nil {
@@ -151,7 +153,15 @@ func NewFromConfig(configPath string) error {
 	if err := validPath(configPath); err != nil {
 		return nil
 	}
-
+	file, err := loadConfig(configPath)
+	if err != nil {
+		return err
+	}
+	var duncanConfig DuncanConfig
+	err = yaml.Unmarshal(file, &duncanConfig)
+  if err != nil{
+    return err
+  }
 	return nil
 }
 

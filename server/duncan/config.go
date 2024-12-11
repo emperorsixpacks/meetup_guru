@@ -5,6 +5,7 @@ type ConnnectionConfig struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
 	password string `yaml:"password"`
+	Url      string `yaml:"url"`
 }
 
 type DatabaseConfig struct {
@@ -18,6 +19,6 @@ type Conections struct {
 }
 
 type DuncanConfig struct {
-	app         ConnnectionConfig
-	connections ConnnectionConfig
+	App         ConnnectionConfig `yaml:"app"`
+	Connections ConnnectionConfig `yaml:"connection"`
 }

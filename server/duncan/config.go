@@ -1,21 +1,23 @@
 package duncan
 
-type Connection interface {
-	ConstructFromParams(host string, port string, password string) string
-	ConstructFromUrl(url string) string
-}
-
-type AppConfig struct {
-	name string
-	host string
-	port string
-}
-
 type ConnnectionConfig struct {
-	Connections []Connection
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	password string `yaml:"password"`
+}
+
+type DatabaseConfig struct {
+	Master ConnnectionConfig `yaml:"master"`
+	Slave  ConnnectionConfig `yaml:"slave"`
+}
+
+type Conections struct {
+	Redis    ConnnectionConfig `yaml:"redis"`
+	Database DatabaseConfig    `yaml:"database"`
 }
 
 type DuncanConfig struct {
-	app         AppConfig
+	app         ConnnectionConfig
 	connections ConnnectionConfig
-} 
+}

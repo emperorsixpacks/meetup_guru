@@ -17,10 +17,25 @@ const DEFAULT_HOST = "127.0.0.1"
 
 type Context map[string]any
 
+func validPath(configPath string) error {
+	_, err := os.Stat(configPath)
+	if !os.IsNotExist(err) {
+		return err
+	}
+	return nil
+}
+func loadCOnfig(filePath string, ){
+  file, err := os.ReadFile(filePath)
+  if err != nil{
+    return err
+  }
+
+}
+
 type RedisConnetion struct {
-	Addr string
+	Addr     string
 	Password string
-	DB   int
+	DB       int
 }
 
 type Duncan struct {
@@ -34,8 +49,8 @@ type Duncan struct {
 
 func (this *Duncan) Start() {
 	log.Print("Starting Duncan Server")
+  log.Print("Server has started on : ", this.getServerAddress())
 	this.initHTTPserver()
-	log.Print("Server has started on : ", this.getServerAddress())
 	err := this.server.ListenAndServe()
 	if err != nil {
 		log.Fatal("could not start server : ", err)
@@ -132,7 +147,12 @@ func (this *Duncan) initHTTPserver() {
 	}
 }
 
-func LoadfromConfig(pathToconfig string) {
+func NewFromConfig(configPath string) error {
+	if err := validPath(configPath); err != nil {
+		return nil
+	}
+
+	return nil
 }
 
 func Defualt() *Duncan {

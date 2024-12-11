@@ -19,7 +19,7 @@ func (this *RedisClient) clearDB() error {
 	if err := this.rdb.FlushAll(ctx).Err(); err != nil {
 		return err
 	}
-  return nil
+	return nil
 }
 
 // TODO try to make this simpler
@@ -39,7 +39,7 @@ func (this RedisClient) GetJSON(k string, o interface{}) error {
 
 func (this RedisClient) getJSON(k string, inner_key ...string) (interface{}, error) {
 	if len(inner_key) == 0 {
-		inner_key[0] = "$"
+		inner_key = []string{"$"}
 	}
 	val, err := this.rdb.JSONGet(ctx, k, inner_key[0]).Result()
 	if err != nil {
@@ -64,10 +64,11 @@ func (this RedisClient) setJSON(key string, value interface{}, inner_key ...stri
 		return err
 	}
 	if len(inner_key) == 0 {
-		inner_key[0] = "$"
+		inner_key = []string{"$"}
 	}
 	err = this.rdb.JSONSet(ctx, key, inner_key[0], val).Err()
 	if err != nil {
+    fmt.Println(err)
 		return err
 	}
 	return nil

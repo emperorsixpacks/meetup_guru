@@ -1,7 +1,7 @@
 package duncan
 
 import (
-	//"os"
+	"os"
 	"testing"
 )
 
@@ -33,7 +33,7 @@ type testStruct struct {
 }
 
 func TestInvalidConnection(t *testing.T) {
-	// os.Stdout, _ = os.Open(os.DevNull)
+	os.Stdout, _ = os.Open(os.DevNull)
 	_, err := NewRedisclient(invalid_connection)
 	if err == nil {
 		t.Error("Testing invalid connection failed")

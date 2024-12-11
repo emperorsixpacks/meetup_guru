@@ -9,6 +9,17 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+func mapToStruct(i interface{}, o *interface{}) error {
+	newStrVal, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+	if err = json.Unmarshal([]byte(newStrVal), o); err != nil {
+		return err
+	}
+	return nil
+}
+
 var ctx = context.Background() // I do not know, should I put this in the struct
 // TODO look into making this a singleton
 type RedisClient struct {
@@ -26,14 +37,17 @@ func (this *RedisClient) clearDB() error {
 func (this RedisClient) GetJSON(k string, o interface{}) error {
 	// NOTE this works
 	val, err := this.getJSON(k)
-	str_val, ok := val.(string) // TODO read on how this guy works
-	if !ok {
-		return errors.New("Internal error")
-	}
-	if err = json.Unmarshal([]byte(str_val), o); err != nil {
+	if err != nil {
 		return err
 	}
-
+	strMapping, ok := val.([]interface{})
+	if !ok {
+		return errors.New("internal error")
+	}
+	err = mapToStruct(strMapping[0], &o)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -41,7 +55,7 @@ func (this RedisClient) getJSON(k string, inner_key ...string) (interface{}, err
 	if len(inner_key) == 0 {
 		inner_key = []string{"$"}
 	}
-	val, err := this.rdb.JSONGet(ctx, k, inner_key[0]).Result()
+	val, err := this.rdb.JSONGet(ctx, k, inner_key[0]).Expanded()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +82,7 @@ func (this RedisClient) setJSON(key string, value interface{}, inner_key ...stri
 	}
 	err = this.rdb.JSONSet(ctx, key, inner_key[0], val).Err()
 	if err != nil {
-    fmt.Println(err)
+		fmt.Println(err)
 		return err
 	}
 	return nil

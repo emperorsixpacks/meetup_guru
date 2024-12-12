@@ -9,10 +9,10 @@ import (
 
 type UserSchema struct {
 	Base
-	FirstName string `form:"first_name"`
-	LastName  string `form:"last_name"`
-	Username  string `form:"username" gorm:"unique"`
-	Email     string `form:"email" gorm:"type:varchar(110);unique"`
+	FirstName string `form:"first_name" json:"first_name"`
+	LastName  string `form:"last_name" json:"last_name"`
+	Username  string `form:"username" gorm:"unique" json:"username"`
+	Email     string `form:"email" gorm:"type:varchar(110);unique" json:"email"`
 	password  string
 }
 
@@ -23,7 +23,7 @@ func (this *UserSchema) SetPassword(password string) {
 type User struct {
 	gorm.Model
 	UserSchema
-	User_id      uuid.UUID `gorm:"type:uuid;primary_key"`
+  User_id      uuid.UUID `gorm:"type:uuid;primary_key" json:"user_id"`
 	Passord_hash string    `form:"password"`
 }
 

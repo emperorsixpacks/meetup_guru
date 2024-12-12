@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"meetUpGuru/m/controllers"
 	"meetUpGuru/m/duncan"
 	"os"
 
@@ -13,7 +12,7 @@ import (
 var (
 	DuncanServer = duncan.Defualt()
 	DuncanRouter = duncan.NewRouter()
-	Connection   = PostgresConnection{
+	PGConnection = PostgresConnection{
 		host:     "localhost",
 		port:     "5432",
 		user:     "postgres",
@@ -21,11 +20,11 @@ var (
 		database: "meetups_guru",
 		debug:    true,
 	}
-	BaseDB = CreateConnection()
+	BaseDB = GetConnection()
 )
 
-func CreateConnection() *gorm.DB {
-	baseDB, err := controllers.NewConnection(&Connection)
+func GetConnection() *gorm.DB {
+	baseDB, err := getConnection(&PGConnection)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

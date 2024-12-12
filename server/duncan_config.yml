@@ -3,12 +3,13 @@ app:
   port: ${HOST_PORT}
   name: "MeetUps Guru"
 connections:
-  cache:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PORT}
-  database:
-    sqlite3:
-      url: pass sqlite url here 
-
+    database:
+      master:
+        name: "postgres"
+        host: ${MASTER_DB_HOST}
+        port: ${MASTER_DB_PORT}
+        password: ${MASTER_DB_PASSOWRD} 
